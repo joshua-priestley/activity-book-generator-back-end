@@ -8,5 +8,9 @@ def create_app(test_config=None):
   if test_config:
     app.config.from_mapping(test_config)
 
+  # Register blueprints
+  from . import root
+  app.register_blueprint(root.bp)
+
   return app
  
