@@ -8,3 +8,7 @@ instance/
 .pytest_cache/
 .coverage
 htmlcov/
+
+tags
+tags.lock
+tags.temp
