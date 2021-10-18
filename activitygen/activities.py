@@ -57,11 +57,13 @@ def generate_anagrams(words: List[str], difficulty: Difficulty, seed=None) -> Li
         chars = prefix + grouped_chars
 
       # Shuffle until different
-      shuffled = chars
       if len(chars) > 1:
-        while shuffled == chars:
-          shuffled = Random(seed).sample(chars, len(chars))
-      
+        original = list(range(len(chars)))
+        permutation = original
+        while permutation == original:
+          permutation = Random(seed).sample(original, len(original))
+      shuffled = [chars[i] for i in permutation]
+
       if recover_fixed:
         shuffled.insert(0, split_word[0])
         shuffled.append(split_word[-1])
