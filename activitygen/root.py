@@ -18,12 +18,17 @@ activity_map = {
   'anagram': activities.generate_anagrams
 }
 
+# Example json:
+#
+#   {
+#     "0": {"puzzle": "anagram", "data": ["test", "hello", "world"]}, 
+#     "1": {"puzzle": "anagram", "data": ["christmas", "presents"]}
+#   }
 
-# Will eventually be post only
 @bp.route("/pdf/", methods=["post"])
 def pdf():
-  # Hard coded post for now
-  activity = request.get_json() #[{"id": "anagram", "num": "5"}]
+
+  activity = request.get_json() 
 
   html = ""
   for key in activity:
@@ -42,29 +47,3 @@ def pdf():
 
 
 
-
-  # url = "file"
-    # # Generate UUID for each file uploaded
-    # tex_uuid = uuid.uuid4()
-    # tex_filename = 'tex/{}'.format(str(tex_uuid))
-    # tex_url = url[:-3] + 'tex'
-    # urllib.response.urlretrieve(tex_url, tex_filename)
-
-    # # Try to render LaTeX to PDF
-    # tex_render = pexpect.spawn("pdflatex -interaction=nonstopmode -output-directory=tex {}".format("file"))
-    # try:
-    #     tex_render.expect("Output written on", timeout=30)
-    # except pexpect.TIMEOUT:
-    #     return "Timeout when rendering the PDF!"
-
-    # # Load PDF into memory
-    # pdf_filename = tex_filename + '.pdf'
-    # pdf_file = open(pdf_filename)
-
-    # # Remove files from filesystem
-    # os.remove(tex_filename)
-    # os.remove(pdf_filename)
-    # os.remove(tex_filename+'.aux')
-    # os.remove(tex_filename+'.log')
-
-   # return Response(pdf_file, mimetype='application/pdf')
