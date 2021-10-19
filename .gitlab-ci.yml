@@ -1,0 +1,35 @@
+stages: 
+  - test 
+  - deploy
+
+test:
+  tags:
+    - docker
+  image: python:alpine
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - python -m coverage run -m pytest
+    - python -m pytest -v
+
+deploy_dev:
+  tags:
+    - shell
+  stage: deploy
+  only:
+    - dev
+  script:
+    - export APP_PORT=5001
+    - docker-compose -p dev_backend down
+    - docker-compose -p dev_backend up --build -d
+
+deploy_prod:
+  tags:
+    - shell
+  stage: deploy
+  only:
+    - master
+  script:
+    - export APP_PORT=5000
+    - docker-compose -p prod_backend down
+    - docker-compose -p prod_backend up --build -d
