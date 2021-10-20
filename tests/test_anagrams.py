@@ -1,5 +1,5 @@
 import pytest
-from activitygen.activities import Difficulty, generate_anagrams, generate_data, generate_html
+from activitygen.anagrams import Difficulty, generate_anagrams, generate_data, generate_html
 from collections import Counter
 
 SAMPLE_WORDS = ["cow", "reindeer", "skeleton", "princess", "christmas tree", "a", "tv"]

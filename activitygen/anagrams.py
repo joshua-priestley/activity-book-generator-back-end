@@ -15,7 +15,7 @@ class Difficulty(Enum):
   def __lt__(self, other):
     return self.value < other.value
 
-bp = Blueprint("activities", __name__, url_prefix="/activities")
+bp = Blueprint("anagrams", __name__, url_prefix="/anagrams")
 
 def generate_html(anagrams_data: Dict) -> str:
   """Generates HTML from internal data representation of anagrams"""

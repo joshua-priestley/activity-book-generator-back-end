@@ -9,9 +9,9 @@ def create_app(test_config=None):
     app.config.from_mapping(test_config)
 
   # Register blueprints
-  from . import root, activities
+  from . import root, anagrams
   app.register_blueprint(root.bp)
-  app.register_blueprint(activities.bp)
+  app.register_blueprint(anagrams.bp)
 
   return app
  
