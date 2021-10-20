@@ -1,6 +1,11 @@
+from io import StringIO
+import sys
 from math import sqrt, floor, log2, pow
 from random import shuffle, randint
 import string
+
+old_stdout = sys.stdout
+sys.stdout = my_stdout = StringIO()
 
 MAX_GRID_LENGTH = 15
 MAX_ATTEMPTS = 100
@@ -61,8 +66,13 @@ def generate(words, hidden_message = None):
   place_hidden_message(hidden_message)
   add_random_letters()
   print_board()
-  print("Complete the secret message in the space below:")
-  print(hangman_text + '\n')
+  if hidden_message != None:
+    print("Complete the secret message in the space below:")
+    print(hangman_text + '\n')
+
+  ans = my_stdout.getvalue()
+  sys.stdout = old_stdout
+  return ans
 
 ALPHABET_SIZE = 26
 
@@ -174,4 +184,4 @@ def try_position(word, pos, dir):
 
 
 if __name__ == "__main__":
-  generate(["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"], "We love animals")
+  print(generate(["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"], "We love animals"))

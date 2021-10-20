@@ -15,7 +15,8 @@ def root():
 
 
 activity_map = {
-  'anagram': activities.generate_anagrams
+  'anagram': activities.generate_anagrams,
+  'word-search': activities.generate_word_search
 }
 
 # Example json:

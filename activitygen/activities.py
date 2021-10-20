@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 from functools import total_ordering
 from random import getrandbits, Random
 from typing import List
+import word_search
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")
 
@@ -73,3 +74,10 @@ def generate_anagrams(words: List[str], difficulty: Difficulty, seed=None) -> Li
     anagrams.append("".join(split_words))
   
   return anagrams
+
+def generate_word_search(words, difficulty):
+  # Find a way to split the words into the ones to use in the word search itself and
+  # the hidden message. Also, the word search doesn't use difficulty (sorry)
+
+  # word_search.generate(words, hidden_message)
+  pass
