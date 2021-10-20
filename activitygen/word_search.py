@@ -46,8 +46,13 @@ def generate(words, hidden_message = None):
 
   print("The words you have to find are: ", end='')
   print(*words, sep=", ")
+  print()
+
+  global hidden_msg_length
 
   if hidden_message != None:
+    print("Find the secret message among the unused letters. Each letter contained in the hidden " \
+     "message has the same number of unused letters between itself and the next one.")
     hidden_words = hidden_message.split()
     hangman_text = ""
     for i in range(len(hidden_words)):
@@ -56,7 +61,10 @@ def generate(words, hidden_message = None):
       hangman_text += '  '
     hangman_text = hangman_text.strip()
     hidden_message = hidden_message.lower().translate({ord(c): None for c in string.whitespace})
-
+    hidden_msg_length = len(hidden_message)
+  else:
+    hidden_msg_length = 0
+  
   min_length, total_cells = compute_constraints(words, hidden_message)
 
   global l, grid_size
@@ -105,15 +113,20 @@ def place_hidden_message(msg):
 
   global cells
 
+  letter_gap = remaining // hidden_msg_length - 1
   msg_len = len(msg)
-  cnt = 0
+  cnt = crt_gap = 0
   for i in range(l):
     for j in range(l):
       if cells[i][j] == '':
-        cells[i][j] = msg[cnt]
-        cnt += 1
-        if cnt == msg_len:
-          return
+        if crt_gap == letter_gap:
+          cells[i][j] = msg[cnt]
+          cnt += 1
+          crt_gap = 0
+          if cnt == msg_len:
+            return
+        else:
+          crt_gap += 1
 
 def place_words(words):
   global l, grid_size
@@ -123,6 +136,8 @@ def place_words(words):
       attempts += 1
       global cells
       cells = [['' for _ in range(l)] for _ in range(l)]
+      global remaining
+      remaining = grid_size
       shuffle(words)
       success = True
 
@@ -133,7 +148,7 @@ def place_words(words):
           break
 
       # If we managed to find a solution we return it
-      if success:
+      if success and remaining >= hidden_msg_length:
         return cells
       # Otherwise we try again
     
@@ -174,9 +189,13 @@ def try_position(word, pos, dir):
       return False
     rr += dir[0]
     cc += dir[1]
-  
+
+  global remaining
+
   for i in range(len(word)):
-    cells[r][c] = word[i]
+    if cells[r][c] == '':
+      cells[r][c] = word[i]
+      remaining -= 1
     r += dir[0]
     c += dir[1]
   
