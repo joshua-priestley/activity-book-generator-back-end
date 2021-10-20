@@ -1,9 +1,9 @@
 import re
 from enum import Enum
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, render_template
 from functools import total_ordering
 from random import getrandbits, Random
-from typing import List
+from typing import Dict, List
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")
 
@@ -17,11 +17,18 @@ class Difficulty(Enum):
 
 bp = Blueprint("activities", __name__, url_prefix="/activities")
 
-@bp.route("/anagrams")
-def anagrams():
-  words = request.args.getlist("words")
-  difficulty = Difficulty[request.args.get("difficulty", Difficulty.HARD).upper()]
-  return jsonify(generate_anagrams(words, difficulty))
+def generate_html(anagrams_data: Dict) -> str:
+  """Generates HTML from internal data representation of anagrams"""
+  blanks = (re.sub("[a-z]", "_", word) for word in anagrams_data["words"])
+  return render_template("anagrams.html", theme=anagrams_data["theme"], data=zip(anagrams_data["anagrams"], blanks))
+
+def generate_data(theme: str, words: List[str], difficulty: Difficulty) -> Dict:
+  """Generates internal data representation of anagrams with the provided words"""
+  return {
+    "theme": theme,
+    "words": words,
+    "anagrams": generate_anagrams(words, difficulty)
+  }
 
 def generate_anagrams(words: List[str], difficulty: Difficulty, seed=None) -> List[str]:
   anagrams: List[str] = []
@@ -62,7 +69,9 @@ def generate_anagrams(words: List[str], difficulty: Difficulty, seed=None) -> Li
         permutation = original
         while permutation == original:
           permutation = Random(seed).sample(original, len(original))
-      shuffled = [chars[i] for i in permutation]
+        shuffled = [chars[i] for i in permutation]
+      else:
+        shuffled = chars
 
       if recover_fixed:
         shuffled.insert(0, split_word[0])

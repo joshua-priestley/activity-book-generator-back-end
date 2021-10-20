@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block header %}
+  Anagrams
+{% endblock %}
+
+{% block instructions %}
+  The following words have been scrambled! Can you rearrange the letters to find each {{theme}} themed word?
+{% endblock %}
+
+{% block content %}
+  <table class="anagrams-table">
+    <tbody>
+      {% for anagram, blanks in data %}
+        <tr>
+          <td>{{anagram}}</td>
+          <td><span class="anagrams-blanks">{{blanks}}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

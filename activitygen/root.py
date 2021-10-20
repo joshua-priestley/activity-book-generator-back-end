@@ -1,7 +1,4 @@
-import re
-from flask import Blueprint, jsonify, make_response, request
-from flask.templating import render_template
-from werkzeug.utils import send_file
+from flask import Blueprint, jsonify, make_response
 import pdfkit
 #from werkzeug.wrappers import request
 
@@ -13,9 +10,8 @@ bp = Blueprint("root", __name__)
 def root():
   return jsonify("Activity Book Generator back-end is running")
 
-
-activity_map = {
-  'anagram': activities.generate_anagrams
+html_gen_map = {
+  "anagrams": activities.generate_html
 }
 
 # Example json:
@@ -25,25 +21,43 @@ activity_map = {
 #     "1": {"puzzle": "anagram", "data": ["christmas", "presents"]}
 #   }
 
-@bp.route("/pdf/", methods=["post"])
+@bp.route("/pdf/")
 def pdf():
 
-  activity = request.get_json() 
+  # Example data for now – TODO delete and replace with data fetched from database
+  data = [
+    {
+      "activity": "anagrams",
+      "data": {
+        "theme": "Christmas",
+        "words": ["christmas tree", "santa", "reindeer", "present", "elf", "bauble", "frosty the snowman", "sleigh", "stocking"],
+        "anagrams": ["amcistshr eert", "aants", "rnerdeei", "ertpens", "lfe", "bbueal", "royfts teh nmanosw", "egislh", "igkcnsot"]
+      }
+    },
+    {
+      "activity": "anagrams",
+      "data": {
+        "theme": "animal",
+        "words": ["cow", "sheep", "cheetah", "mouse", "aardvark", "elephant", "monkey", "rabbit", "mountain lion", "hippopotamus"],
+        "anagrams": ["owc", "eshep", "aeehhtc", "eomus", "rvaakdra", "eltnhpae", "nemoky", "biatbr", "niouatnm ilno", "ptiposauohpm"]
+      }
+    }
+  ]
 
-  html = ""
-  for key in activity:
-    print(activity[key])
-    html += " ".join(activity_map[activity[key]['puzzle']](activity[key]['data'], activities.Difficulty.HARD))
-    html += " "
+  html = (html_gen_map[activity["activity"]](activity["data"]) for activity in data)
 
-
-  print("html: " + html)
-  pdf = pdfkit.from_string(html, False)
+  pdf = pdfkit.from_string("".join(html), False, options={
+    "encoding": "UTF-8",
+    "page-size": "A4",
+    "dpi": 400,
+    "disable-smart-shrinking": "",
+    "margin-top": "1in",
+    "margin-right": "1in",
+    "margin-bottom": "1in",
+    "margin-left": "1in"
+  })
 
   response = make_response(pdf)
   response.headers['Content-Type'] = 'application/pdf'
   response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
   return response
-
-
-
