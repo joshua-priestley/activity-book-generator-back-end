@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, make_response, request, session
 import pdfkit
+import random
 #from werkzeug.wrappers import request
 
 from . import anagrams
@@ -40,40 +41,36 @@ html_gen_map = {
   "anagrams": anagrams.generate_html
 }
 
-# Example json:
-#
-#   {
-#     "0": {"puzzle": "anagram", "data": ["test", "hello", "world"]}, 
-#     "1": {"puzzle": "anagram", "data": ["christmas", "presents"]}
-#   }
+# {
+# "theme": "christmas",
+# "anagrams": 3,
+# "wordsearch": 4
+# } 
+@bp.route("/generate", methods=["post"])
+def generate():
+  body = request.json
 
-@bp.route("/pdf/", methods=["post"])
-def pdf():
-  # Example data
-  activities = [
-    {
-      "activity": "anagrams",
-      "inputs": {
-        "theme": "cities",
-        "words": ["new york", "paris", "hong kong", "amsterdam", "tokyo", "london", "singapore", "chicago"],
-        "difficulty": anagrams.Difficulty.HARD
-      }
-    },
-    # {
-    #   "activity": "word search",
-    #   "inputs": {
-    #     "words": ["london", ...],
-    #     "hidden_message": "skyscrapers are cool"
-    #   }
-    # }
-  ]
-  pdf = generate_pdf(activities)
+  wordset = themes[body["theme"]]
+  numWords = len(wordset)
+
+  json = {"activities" : []}
+  for _ in range(body["anagrams"]):
+    # select random words for anagram
+    puzzleWords = random.sample(wordset, min(numWords, 5))
+    anagramData = anagrams.generate_data(body["theme"], puzzleWords, anagrams.Difficulty.HARD)
+    json["activities"].append({"activity": "anagrams", "inputs" : anagramData})
+    
+  for n in range(body["wordsearch"]):
+    puzzleWords = random.sample(wordset, min(numWords, 5))
+    
+
+  pdf = pdf(json)
   response = make_response(pdf)
   response.headers['Content-Type'] = 'application/pdf'
   response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
   return response
 
-def generate_pdf(activities):
+def pdf(activities):
   html = []
   for activity in activities:
     # Generate activity internal representation
