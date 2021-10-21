@@ -3,6 +3,7 @@ import pdfkit
 #from werkzeug.wrappers import request
 
 from . import anagrams
+from . import word_search
 
 bp = Blueprint("root", __name__)
 
@@ -10,8 +11,9 @@ bp = Blueprint("root", __name__)
 def root():
   return jsonify("Activity Book Generator back-end is running")
 
-html_gen_map = {
-  "anagrams": anagrams.generate_html
+activity_map = {
+  'anagram': anagrams.generate_anagrams,
+  'word-search': word_search.generate_word_search
 }
 
 # Example json:
