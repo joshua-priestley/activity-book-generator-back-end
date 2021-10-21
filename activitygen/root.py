@@ -13,6 +13,33 @@ bp = Blueprint("root", __name__)
 def root():
   return jsonify("Activity Book Generator back-end is running")
 
+@bp.route("/word-search")
+def word_search_endpoint():
+  words = ["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"]
+  hidden_message = "We love animals"
+  (cells, hangman_words, _) = word_search.generate(words, hidden_message)
+  data = {
+    "cells": cells,
+    "hangman_words": hangman_words,
+    "words": words,
+  }
+  options = {
+    "encoding": "UTF-8",
+    "page-size": "A4",
+    "dpi": 400,
+    "disable-smart-shrinking": "",
+    "margin-top": "1in",
+    "margin-right": "1in",
+    "margin-bottom": "1in",
+    "margin-left": "1in"
+  }
+  pdf = pdfkit.from_string(word_search.generate_html(data), False, options=options)
+  response = make_response(pdf)
+  response.headers['Content-Type'] = 'application/pdf'
+  response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+  return response
+
+
 @bp.route("/themes", methods = ['GET', 'POST'])
 def themesEndpoint():
   if request.method == 'GET':
@@ -38,7 +65,8 @@ activity_map = {
 }
 
 html_gen_map = {
-  "anagrams": anagrams.generate_html
+  "anagrams": anagrams.generate_html,
+  "word-search": word_search.generate_html
 }
 
 # {
@@ -65,7 +93,6 @@ def generate():
     
   for n in range(body["wordsearch"]):
     puzzleWords = random.sample(wordset, min(numWords, 5))
-    
 
   pdf_result = pdf(json)
   response = make_response(pdf_result)
