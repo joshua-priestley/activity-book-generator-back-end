@@ -1,15 +1,35 @@
-from flask import Blueprint, jsonify, make_response
+from flask import Blueprint, jsonify, make_response, request, session
 import pdfkit
 #from werkzeug.wrappers import request
 
 from . import anagrams
 from . import word_search
+from .themes import themes
 
 bp = Blueprint("root", __name__)
 
 @bp.route("/")
 def root():
   return jsonify("Activity Book Generator back-end is running")
+
+@bp.route("/themes", methods = ['GET', 'POST'])
+def themesEndpoint():
+  if request.method == 'GET':
+    result = themes.copy()
+
+    if "custom themes" in session:
+      result = result | session["custom themes"]
+
+    return jsonify(result)
+
+  res = request.json
+
+  if "custom themes" not in session:
+    session["custom themes"] = {}
+
+  session["custom themes"][res["theme"]] = res["words"]
+
+  return jsonify("Added theme")
 
 activity_map = {
   'anagram': anagrams.generate_anagrams,

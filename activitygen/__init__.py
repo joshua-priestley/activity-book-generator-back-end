@@ -9,8 +9,10 @@ def create_app(test_config=None):
   # Use test config if supplied
   if test_config:
     app.config.from_mapping(test_config)
-    app.config["SESSION_TYPE"]  = "redis"
-    app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
+  
+  app.config["SESSION_TYPE"]  = "redis"
+  app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
+  app.config['SECRET_KEY'] = 'super secret key'   
 
   sess = Session()
   sess.init_app(app)

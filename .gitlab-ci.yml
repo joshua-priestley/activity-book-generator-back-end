@@ -7,6 +7,9 @@ test:
     - docker
   image: python:alpine
   stage: test
+  services:
+    - name: redis:6-alpine
+      alias: db
   script:
     - pip install -r requirements.txt
     - python -m coverage run -m pytest

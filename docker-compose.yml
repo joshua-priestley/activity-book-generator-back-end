@@ -8,14 +8,3 @@ services:
       - ${APP_PORT}:5000
   db:
     image: redis:6-alpine
-  postgres:
-    image: postgres:14-alpine
-    environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_USER: admin
-    ports:
-      - 5432:5432
-    volumes:
-      - postgresData:/var/lib/postgresql/data
-volumes:
-  postgresData:
