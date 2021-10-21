@@ -32,8 +32,12 @@ def themesEndpoint():
   return jsonify("Added theme")
 
 activity_map = {
-  'anagram': anagrams.generate_anagrams,
+  'anagrams': anagrams.generate_data,
   'word-search': word_search.generate
+}
+
+html_gen_map = {
+  "anagrams": anagrams.generate_html
 }
 
 # Example json:
@@ -43,36 +47,42 @@ activity_map = {
 #     "1": {"puzzle": "anagram", "data": ["christmas", "presents"]}
 #   }
 
-@bp.route("/pdf/")
+@bp.route("/pdf/", methods=["post"])
 def pdf():
-
-  # Example data for now – TODO delete and replace with data fetched from database
-  data = [
+  # Example data
+  activities = [
     {
       "activity": "anagrams",
-      "data": {
-        "theme": "Christmas",
-        "words": ["christmas tree", "santa", "reindeer", "present", "elf", "bauble", "frosty the snowman", "sleigh", "stocking"],
-        "anagrams": ["amcistshr eert", "aants", "rnerdeei", "ertpens", "lfe", "bbueal", "royfts teh nmanosw", "egislh", "igkcnsot"]
+      "inputs": {
+        "theme": "cities",
+        "words": ["new york", "paris", "hong kong", "amsterdam", "tokyo", "london", "singapore", "chicago"],
+        "difficulty": anagrams.Difficulty.HARD
       }
     },
-    {
-      "activity": "anagrams",
-      "data": {
-        "theme": "animal",
-        "words": ["cow", "sheep", "cheetah", "mouse", "aardvark", "elephant", "monkey", "rabbit", "mountain lion", "hippopotamus"],
-        "anagrams": ["owc", "eshep", "aeehhtc", "eomus", "rvaakdra", "eltnhpae", "nemoky", "biatbr", "niouatnm ilno", "ptiposauohpm"]
-      }
-    }
+    # {
+    #   "activity": "word search",
+    #   "inputs": {
+    #     "words": ["london", ...],
+    #     "hidden_message": "skyscrapers are cool"
+    #   }
+    # }
   ]
+  pdf = generate_pdf(activities)
+  response = make_response(pdf)
+  response.headers['Content-Type'] = 'application/pdf'
+  response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+  return response
 
-  html_gen_map = {
-    "anagrams": anagrams.generate_html
-  }
+def generate_pdf(activities):
+  html = []
+  for activity in activities:
+    # Generate activity internal representation
+    data = activity_map[activity["activity"]](**activity["inputs"])
 
-  html = (html_gen_map[activity["activity"]](activity["data"]) for activity in data)
+    # Generate HTML and append to output
+    html.append(html_gen_map[activity["activity"]](data))
 
-  pdf = pdfkit.from_string("".join(html), False, options={
+  return pdfkit.from_string("".join(html), False, options={
     "encoding": "UTF-8",
     "page-size": "A4",
     "dpi": 400,
@@ -82,8 +92,3 @@ def pdf():
     "margin-bottom": "1in",
     "margin-left": "1in"
   })
-
-  response = make_response(pdf)
-  response.headers['Content-Type'] = 'application/pdf'
-  response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-  return response
