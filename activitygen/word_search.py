@@ -1,11 +1,6 @@
-from io import StringIO
-import sys
 from math import sqrt, floor, log2, pow
 from random import shuffle, randint
 import string
-
-old_stdout = sys.stdout
-sys.stdout = my_stdout = StringIO()
 
 MAX_GRID_LENGTH = 15
 MAX_ATTEMPTS = 100
@@ -78,9 +73,12 @@ def generate(words, hidden_message = None):
     print("Complete the secret message in the space below:")
     print(hangman_text + '\n')
 
-  ans = my_stdout.getvalue()
-  sys.stdout = old_stdout
-  return ans
+  print("\n The word positions are:")
+  for word in words:
+    print(word + ": " + str(word_positions[word]))
+  print()
+
+  return (cells, hidden_words, word_positions)
 
 ALPHABET_SIZE = 26
 
@@ -133,11 +131,11 @@ def place_words(words):
   while True:
     attempts = 0
     while attempts < MAX_ATTEMPTS:
-      attempts += 1
-      global cells
+      global cells, remaining, word_positions
       cells = [['' for _ in range(l)] for _ in range(l)]
-      global remaining
       remaining = grid_size
+      word_positions = {}
+      attempts += 1
       shuffle(words)
       success = True
 
@@ -190,7 +188,8 @@ def try_position(word, pos, dir):
     rr += dir[0]
     cc += dir[1]
 
-  global remaining
+  global remaining, word_positions
+  word_positions[word] = ((r, c), (rr - dir[0], cc-dir[1]))
 
   for i in range(len(word)):
     if cells[r][c] == '':
@@ -203,4 +202,4 @@ def try_position(word, pos, dir):
 
 
 if __name__ == "__main__":
-  print(generate(["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"], "We love animals"))
+  generate(["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"], "We love animals")
