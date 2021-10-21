@@ -92,8 +92,9 @@ def generate():
     }})
     
   for n in range(body["wordsearch"]):
-    puzzleWords = random.sample(wordset, min(numWords, 5))
+    puzzleWords = random.sample(wordset, min(numWords, 6))
     json.append({"activity": "word-search", "inputs": {
+      "hidden_message": puzzleWords.pop(),
       "words": puzzleWords
     }})
 
