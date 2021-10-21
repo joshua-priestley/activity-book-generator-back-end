@@ -33,7 +33,7 @@ def word_search_endpoint():
     "margin-bottom": "1in",
     "margin-left": "1in"
   }
-  pdf = pdfkit.from_string(word_search.generate_html(data), False, options=options)
+  pdf = pdfkit.from_string(word_search.generate_html(data), False, options=options, css="style/styles.css")
   response = make_response(pdf)
   response.headers['Content-Type'] = 'application/pdf'
   response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
