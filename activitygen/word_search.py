@@ -70,7 +70,7 @@ def generate(words, hidden_message = None):
   place_words(words)
   place_hidden_message(hidden_message)
   add_random_letters()
-  print_board()
+  # print_board()
   if hidden_message != None:
     print("Complete the secret message in the space below:")
     print(hangman_text + '\n')

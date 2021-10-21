@@ -85,7 +85,7 @@ def generate():
   for _ in range(body["anagrams"]):
     # select random words for anagram
     puzzleWords = random.sample(wordset, min(numWords, 5))
-    json.append({"activity": "anagrams", "inputs" : {
+    json.append({"activity": "anagrams", "inputs": {
       "theme": body["theme"],
       "words": puzzleWords,
       "difficulty": anagrams.Difficulty.HARD
@@ -93,6 +93,9 @@ def generate():
     
   for n in range(body["wordsearch"]):
     puzzleWords = random.sample(wordset, min(numWords, 5))
+    json.append({"activity": "word-search", "inputs": {
+      "words": puzzleWords
+    }})
 
   pdf_result = pdf(json)
   response = make_response(pdf_result)
@@ -106,10 +109,12 @@ def pdf(activities):
     # Generate activity internal representation
     data = activity_map[activity["activity"]](**activity["inputs"])
 
+    data = process(data, activity)
+
     # Generate HTML and append to output
     html.append(html_gen_map[activity["activity"]](data))
 
-  return pdfkit.from_string("".join(html), False, options={
+  return pdfkit.from_string("".join(html), False, css="style/styles.css", options={
     "encoding": "UTF-8",
     "page-size": "A4",
     "dpi": 400,
@@ -119,3 +124,13 @@ def pdf(activities):
     "margin-bottom": "1in",
     "margin-left": "1in"
   })
+
+def process(data, activity):
+  if activity["activity"] == "word-search":
+    cells, hangman_words, _ = data
+    data = {
+      "cells": cells,
+      "hangman_words": hangman_words,
+      "words": activity["inputs"]["words"]
+    }
+  return data
