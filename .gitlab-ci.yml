@@ -23,7 +23,7 @@ deploy_dev:
     - dev
   script:
     - export APP_PORT=5001
-    - docker-compose -p dev_backend down
+    - docker-compose -p dev_backend down --rmi local
     - docker-compose -p dev_backend up --build -d
 
 deploy_prod:
@@ -34,5 +34,5 @@ deploy_prod:
     - master
   script:
     - export APP_PORT=5000
-    - docker-compose -p prod_backend down
+    - docker-compose -p prod_backend down --rmi local
     - docker-compose -p prod_backend up --build -d
