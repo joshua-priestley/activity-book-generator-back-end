@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, make_response, request, session
 import pdfkit
+import random
 #from werkzeug.wrappers import request
 
 from . import anagrams
@@ -36,41 +37,61 @@ activity_map = {
   'word-search': word_search.generate
 }
 
-# Example json:
-#
-#   {
-#     "0": {"puzzle": "anagram", "data": ["test", "hello", "world"]}, 
-#     "1": {"puzzle": "anagram", "data": ["christmas", "presents"]}
-#   }
+
+# {
+# "theme": "christmas",
+# "anagrams": 3,
+# "wordsearch": 4
+# } 
+@bp.route("/generate", methods=["post"])
+def generate():
+  body = request.json
+
+  wordset = themes[body["theme"]]
+  numWords = len(wordset)
+
+  json = {"activities" : []}
+  for _ in range(body["anagrams"]):
+    # select random words for anagram
+    puzzleWords = random.sample(wordset, min(numWords, 5))
+    anagramData = anagrams.generate_data(body["theme"], puzzleWords, anagrams.Difficulty.HARD)
+    json["activities"].append({"activity": "anagrams", "inputs" : anagramData})
+    
+  for n in range(body["wordsearch"]):
+    puzzleWords = random.sample(wordset, min(numWords, 5))
+    
+
+  return pdf(json)
 
 @bp.route("/pdf/")
-def pdf():
+def pdf(json):
 
+  data = json["activities"]
   # Example data for now – TODO delete and replace with data fetched from database
-  data = [
-    {
-      "activity": "anagrams",
-      "data": {
-        "theme": "Christmas",
-        "words": ["christmas tree", "santa", "reindeer", "present", "elf", "bauble", "frosty the snowman", "sleigh", "stocking"],
-        "anagrams": ["amcistshr eert", "aants", "rnerdeei", "ertpens", "lfe", "bbueal", "royfts teh nmanosw", "egislh", "igkcnsot"]
-      }
-    },
-    {
-      "activity": "anagrams",
-      "data": {
-        "theme": "animal",
-        "words": ["cow", "sheep", "cheetah", "mouse", "aardvark", "elephant", "monkey", "rabbit", "mountain lion", "hippopotamus"],
-        "anagrams": ["owc", "eshep", "aeehhtc", "eomus", "rvaakdra", "eltnhpae", "nemoky", "biatbr", "niouatnm ilno", "ptiposauohpm"]
-      }
-    }
-  ]
+  # data = [
+  #   {
+  #     "activity": "anagrams",
+  #     "data": {
+  #       "theme": "Christmas",
+  #       "words": ["christmas tree", "santa", "reindeer", "present", "elf", "bauble", "frosty the snowman", "sleigh", "stocking"],
+  #       "anagrams": ["amcistshr eert", "aants", "rnerdeei", "ertpens", "lfe", "bbueal", "royfts teh nmanosw", "egislh", "igkcnsot"]
+  #     }
+  #   },
+  #   {
+  #     "activity": "anagrams",
+  #     "data": {
+  #       "theme": "animal",
+  #       "words": ["cow", "sheep", "cheetah", "mouse", "aardvark", "elephant", "monkey", "rabbit", "mountain lion", "hippopotamus"],
+  #       "anagrams": ["owc", "eshep", "aeehhtc", "eomus", "rvaakdra", "eltnhpae", "nemoky", "biatbr", "niouatnm ilno", "ptiposauohpm"]
+  #     }
+  #   }
+  # ]
 
   html_gen_map = {
     "anagrams": anagrams.generate_html
   }
 
-  html = (html_gen_map[activity["activity"]](activity["data"]) for activity in data)
+  html = (html_gen_map[activity["activity"]](activity["inputs"]) for activity in data)
 
   pdf = pdfkit.from_string("".join(html), False, options={
     "encoding": "UTF-8",
