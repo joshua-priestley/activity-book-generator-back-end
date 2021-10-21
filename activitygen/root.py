@@ -53,12 +53,15 @@ def generate():
   wordset = themes[body["theme"]]
   numWords = len(wordset)
 
-  json = {"activities" : []}
+  json = []
   for _ in range(body["anagrams"]):
     # select random words for anagram
     puzzleWords = random.sample(wordset, min(numWords, 5))
-    anagramData = anagrams.generate_data(body["theme"], puzzleWords, anagrams.Difficulty.HARD)
-    json["activities"].append({"activity": "anagrams", "inputs" : anagramData})
+    json.append({"activity": "anagrams", "inputs" : {
+      "theme": body["theme"],
+      "words": puzzleWords,
+      "difficulty": anagrams.Difficulty.HARD
+    }})
     
   for n in range(body["wordsearch"]):
     puzzleWords = random.sample(wordset, min(numWords, 5))
