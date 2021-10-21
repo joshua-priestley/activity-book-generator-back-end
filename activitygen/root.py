@@ -13,6 +13,10 @@ bp = Blueprint("root", __name__)
 def root():
   return jsonify("Activity Book Generator back-end is running")
 
+@bp.route("/puzzles")
+def root():
+  return jsonify(["word search", "anagrams"])
+
 @bp.route("/word-search")
 def word_search_endpoint():
   words = ["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"]
