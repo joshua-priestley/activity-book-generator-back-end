@@ -3,6 +3,7 @@ import pdfkit
 #from werkzeug.wrappers import request
 
 from . import anagrams
+from .maze import Maze
 
 bp = Blueprint("root", __name__)
 
@@ -46,7 +47,14 @@ def pdf():
 
   html = (html_gen_map[activity["activity"]](activity["data"]) for activity in data)
 
-  pdf = pdfkit.from_string("".join(html), False, options={
+  print(html)
+
+
+  maze = Maze(15, 15, 0, 0)
+  maze.make_maze()
+
+
+  pdf = pdfkit.from_string("".join(html) + maze.generate_svg(), False, options={
     "encoding": "UTF-8",
     "page-size": "A4",
     "dpi": 400,
