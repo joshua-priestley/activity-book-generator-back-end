@@ -33,7 +33,7 @@ def themesEndpoint():
 
 activity_map = {
   'anagram': anagrams.generate_anagrams,
-  'word-search': word_search.generate_word_search
+  'word-search': word_search.generate
 }
 
 # Example json:
@@ -65,6 +65,10 @@ def pdf():
       }
     }
   ]
+
+  html_gen_map = {
+    "anagrams": anagrams.generate_html
+  }
 
   html = (html_gen_map[activity["activity"]](activity["data"]) for activity in data)
 
