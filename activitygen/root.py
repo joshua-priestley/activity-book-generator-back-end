@@ -14,7 +14,7 @@ def root():
   return jsonify("Activity Book Generator back-end is running")
 
 @bp.route("/puzzles")
-def root():
+def puzzles():
   return jsonify(["word search", "anagrams"])
 
 @bp.route("/word-search")
