@@ -67,8 +67,8 @@ def generate():
     puzzleWords = random.sample(wordset, min(numWords, 5))
     
 
-  pdf = pdf(json)
-  response = make_response(pdf)
+  pdf_result = pdf(json)
+  response = make_response(pdf_result)
   response.headers['Content-Type'] = 'application/pdf'
   response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
   return response
