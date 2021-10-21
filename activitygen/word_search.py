@@ -2,6 +2,8 @@ from math import sqrt, floor, log2, pow
 from random import shuffle, randint
 import string
 
+from flask.templating import render_template
+
 MAX_GRID_LENGTH = 15
 MAX_ATTEMPTS = 100
 
@@ -46,20 +48,20 @@ def generate(words, hidden_message = None):
   global hidden_msg_length
 
   if hidden_message != None:
-    print("Find the secret message among the unused letters. Each letter contained in the hidden " \
-     "message has the same number of unused letters between itself and the next one.")
     hidden_words = hidden_message.split()
-    hangman_text = ""
+    hangman_words = ["" for _ in hidden_words]
     for i in range(len(hidden_words)):
       for _ in range(len(hidden_words[i])):
-        hangman_text += '_ '
-      hangman_text += '  '
-    hangman_text = hangman_text.strip()
+        hangman_words[i] += '_ '
+      hangman_words[i] = hangman_words[i].strip()
     hidden_message = hidden_message.lower().translate({ord(c): None for c in string.whitespace})
     hidden_msg_length = len(hidden_message)
   else:
     hidden_msg_length = 0
-  
+    hidden_words = hangman_words = []
+
+  hangman_text = '   '.join(hangman_words)
+
   min_length, total_cells = compute_constraints(words, hidden_message)
 
   global l, grid_size
@@ -78,7 +80,7 @@ def generate(words, hidden_message = None):
     print(word + ": " + str(word_positions[word]))
   print()
 
-  return (cells, hidden_words, word_positions)
+  return (cells, hangman_words, word_positions)
 
 ALPHABET_SIZE = 26
 
@@ -200,6 +202,12 @@ def try_position(word, pos, dir):
   
   return True
 
+def generate_html(data):
+  return render_template("word-search.html", words=data["words"], cells=data["cells"], 
+    hangman_words=data["hangman_words"])
+
 
 if __name__ == "__main__":
+  # generate_html(None, None)
   generate(["squirrel", "wolf", "bear", "lion", "tiger", "tortoise"], "We love animals")
+  
