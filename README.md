@@ -12,6 +12,10 @@ python3 -m venv venv
 . venv/bin/activate
 pip3 install --upgrade pip && pip3 install -r requirements.txt
 
+
+#For PDF generation - if you get "No wkhtmltopdf executable found" then install:
+sudo apt-get install wkhtmltopdf
+
 # Tell Flask where to find the app
 export FLASK_APP=activitygen
 

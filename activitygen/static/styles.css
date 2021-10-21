@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap");
+
+* {
+  font-family: "Indie Flower", cursive;
+  font-size: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  height: 55mm;
+  /* cannot use flex so use -webkit-box */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: center;
+}
+
+header h1 {
+  font-size: 4rem;
+}
+
+header p {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.content {
+  /* page height - 2(margin) - header height = 297 - 2(25.4) - 55 = 191.2 */
+  /* cannot use calc so enter height directly */
+  height: 191.2mm;
+}
+
+.anagrams-table {
+  height: 100%;
+  margin: auto;
+}
+
+.anagrams-table td {
+  font-size: 1.25rem;
+  padding: 0 1.5rem;
+}
+
+.anagrams-blanks {
+  font-family: sans-serif;
+  letter-spacing: 0.05rem;
+}

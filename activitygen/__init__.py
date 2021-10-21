@@ -16,7 +16,8 @@ def create_app(test_config=None):
   sess.init_app(app)
 
   # Register blueprints
-  from . import root
+  from . import root, anagrams
   app.register_blueprint(root.bp)
+  app.register_blueprint(anagrams.bp)
 
   return app
