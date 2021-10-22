@@ -81,8 +81,13 @@ html_gen_map = {
 @bp.route("/generate", methods=["post"])
 def generate():
   body = request.json
+ 
+  userThemes = themes.copy()
 
-  wordset = themes[body["theme"]]
+  if "custom themes" in session:
+    userThemes = userThemes | session["custom themes"]
+
+  wordset = userThemes[body["theme"]]
   numWords = len(wordset)
 
   json = []
@@ -96,7 +101,8 @@ def generate():
     }})
     
   for n in range(body["Word Search"]):
-    puzzleWords = random.sample([w for w in wordset if " " not in w], min(numWords, 6))
+    l = [w for w in wordset if " " not in w]
+    puzzleWords = random.sample(l, min(len(l), 6))
     json.append({"activity": "word-search", "inputs": {
       "hidden_message": puzzleWords.pop(),
       "words": puzzleWords

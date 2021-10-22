@@ -19,7 +19,7 @@ def create_app(test_config=None):
   sess = Session()
   sess.init_app(app)
 
-  CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://cloud-vm-43-12.doc.ic.ac.uk", "http://cloud-vm-43-12.doc.ic.ac.uk:80", "http://cloud-vm-43-12.doc.ic.ac.uk:8080"]}})
+  CORS(app, origins = ["http://192.168.1.103:3000", "http://localhost:3000", "http://cloud-vm-43-12.doc.ic.ac.uk", "http://cloud-vm-43-12.doc.ic.ac.uk:80", "http://cloud-vm-43-12.doc.ic.ac.uk:8080"], supports_credentials=True)
 
   # Register blueprints
   from . import root, anagrams
