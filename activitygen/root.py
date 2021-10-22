@@ -15,7 +15,7 @@ def root():
 
 @bp.route("/puzzles")
 def puzzles():
-  return jsonify(["word search", "anagrams"])
+  return jsonify(["Word Search", "Anagrams"])
 
 @bp.route("/word-search")
 def word_search_endpoint():
@@ -86,7 +86,7 @@ def generate():
   numWords = len(wordset)
 
   json = []
-  for _ in range(body["anagrams"]):
+  for _ in range(body["Anagrams"]):
     # select random words for anagram
     puzzleWords = random.sample(wordset, min(numWords, 5))
     json.append({"activity": "anagrams", "inputs": {
@@ -95,7 +95,7 @@ def generate():
       "difficulty": anagrams.Difficulty.HARD
     }})
     
-  for n in range(body["wordsearch"]):
+  for n in range(body["Word Search"]):
     puzzleWords = random.sample(wordset, min(numWords, 6))
     json.append({"activity": "word-search", "inputs": {
       "hidden_message": puzzleWords.pop(),

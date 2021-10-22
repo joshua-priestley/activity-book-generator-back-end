@@ -5,3 +5,4 @@ flask-session
 redis
 pdfkit
 wkhtmltopdf
+flask-cors
