@@ -14,12 +14,12 @@ def create_app(test_config=None):
   app.config["SESSION_TYPE"]  = "redis"
   app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
   app.config['SECRET_KEY'] = 'super secret key'   
-  app.config['CORS_ORIGINS'] = 'http://localhost:3000,http://cloud-vm-43-12.doc.ic.ac.uk,http://cloud-vm-43-12.doc.ic.ac.uk:80,http://cloud-vm-43-12.doc.ic.ac.uk:8080'
+  #app.config['CORS_ORIGINS'] = 'http://localhost:3000,http://cloud-vm-43-12.doc.ic.ac.uk,http://cloud-vm-43-12.doc.ic.ac.uk:80,http://cloud-vm-43-12.doc.ic.ac.uk:8080'
 
   sess = Session()
   sess.init_app(app)
 
-  CORS(app)
+  CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://cloud-vm-43-12.doc.ic.ac.uk", "http://cloud-vm-43-12.doc.ic.ac.uk:80", "http://cloud-vm-43-12.doc.ic.ac.uk:8080"]}})
 
   # Register blueprints
   from . import root, anagrams
