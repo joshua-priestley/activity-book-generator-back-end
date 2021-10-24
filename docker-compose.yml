@@ -4,6 +4,8 @@ services:
     build: .
     depends_on:
       - "db"
+    environment:
+      - FRONT_END_URL
     ports:
       - ${APP_PORT}:5000
   db:

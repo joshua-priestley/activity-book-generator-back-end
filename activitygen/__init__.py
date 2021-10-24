@@ -2,6 +2,7 @@ from flask import Flask, session
 from flask_session import Session
 from flask_cors import CORS
 import redis
+import os
 
 def create_app(test_config=None):
   """Application factory"""
@@ -14,12 +15,15 @@ def create_app(test_config=None):
   app.config["SESSION_TYPE"]  = "redis"
   app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
   app.config['SECRET_KEY'] = 'super secret key'   
-  #app.config['CORS_ORIGINS'] = 'http://localhost:3000,http://cloud-vm-43-12.doc.ic.ac.uk,http://cloud-vm-43-12.doc.ic.ac.uk:80,http://cloud-vm-43-12.doc.ic.ac.uk:8080'
 
   sess = Session()
   sess.init_app(app)
 
-  CORS(app, origins = ["http://192.168.1.103:3000", "http://localhost:3000", "http://cloud-vm-43-12.doc.ic.ac.uk", "http://cloud-vm-43-12.doc.ic.ac.uk:80", "http://cloud-vm-43-12.doc.ic.ac.uk:8080"], supports_credentials=True)
+  origins = ["http://localhost:3000"]
+  if "FRONT_END_URL" in os.environ:
+    origins.append("FRONT_END_URL")
+
+  CORS(app, origins = origins, supports_credentials=True)
 
   # Register blueprints
   from . import root, anagrams
