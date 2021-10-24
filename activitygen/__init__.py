@@ -21,7 +21,7 @@ def create_app(test_config=None):
 
   origins = ["http://localhost:3000"]
   if "FRONT_END_URL" in os.environ:
-    origins.append("FRONT_END_URL")
+    origins.append(os.environ["FRONT_END_URL"])
 
   CORS(app, origins = origins, supports_credentials=True)
 
