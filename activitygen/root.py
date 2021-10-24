@@ -50,7 +50,7 @@ def themesEndpoint():
     result = themes.copy()
 
     if "custom themes" in session:
-      result = result | session["custom themes"]
+      result = { **result, **session["custom themes"] }
 
     return jsonify(result)
 
@@ -85,7 +85,7 @@ def generate():
   userThemes = themes.copy()
 
   if "custom themes" in session:
-    userThemes = userThemes | session["custom themes"]
+    userThemes = { **userThemes, **session["custom themes"] }
 
   wordset = userThemes[body["theme"]]
   numWords = len(wordset)
