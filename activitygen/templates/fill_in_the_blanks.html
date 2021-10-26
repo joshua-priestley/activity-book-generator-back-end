@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block header %}
+  Fill In the Blanks
+{% endblock %}
+
+{% block instructions %}
+  <div class="instructions-1">
+    Some letters from the following words are missing! Can you fill in the blanks to complete each {{theme}} themed word?
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="content-1">
+    <table class="fill-in-the-blanks-table">
+      <tbody>
+        {% for blanked_word in blanked_words %}
+          <tr>
+            <td>{{blanked_word}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,6 +1,6 @@
 import pytest
 from activitygen.anagrams import Difficulty
-from activitygen.fill_in_the_blanks import blank_word, generate
+from activitygen.fill_in_the_blanks import blank_word, generate, generate_html
 
 SAMPLE_WORDS = ["cow", "reindeer", "skeleton", "princess", "christmas tree", "a", "tv"]
 
@@ -47,3 +47,15 @@ def test_data_contains_theme_and_original_words(difficulty):
   data = generate(sample_theme, SAMPLE_WORDS, difficulty)
   assert "theme" in data and data["theme"] == sample_theme
   assert "words" in data and data["words"] == SAMPLE_WORDS
+
+def test_html_contains_all_blanked_words(app):
+  """Generated HTML should contain every blanked word from the internal data representation"""
+  with app.test_request_context():
+    SAMPLE_DATA = {
+      "theme": "Christmas",
+      "words": ["christmas tree", "santa", "reindeer", "present", "elf", "bauble", "sleigh", "stocking"],
+      "blanked_words": ["chri___a_ t_ee", "s__ta", "_ein_ee_", "pres_n_", "el_", "_aubl_", "_leig_", "s_oc_ing"]
+    }
+    html = generate_html(SAMPLE_DATA)
+    assert all(blanked_word in html for blanked_word in SAMPLE_DATA["blanked_words"])
+  

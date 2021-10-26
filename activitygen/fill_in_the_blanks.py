@@ -1,4 +1,5 @@
 from .anagrams import Difficulty
+from flask import render_template
 from random import Random
 from typing import Dict, List
 
@@ -9,11 +10,18 @@ letters_to_blank = {
   Difficulty.HARD: (1 / 3, 1 / 2)
 }
 
+def generate_html(fill_in_the_blanks_data: Dict):
+  """Generates HTML from internal data representation of Fill In the Blanks"""
+  return render_template("fill_in_the_blanks.html",
+                         theme=fill_in_the_blanks_data["theme"],
+                         blanked_words=fill_in_the_blanks_data["blanked_words"])
+
 def generate(theme: str, words: List[str], difficulty: Difficulty) -> Dict:
+  """Generates internal data representation of anagrams with the provided words"""
   return {
     "theme": theme,
     "words": words,
-    "blanked words": [blank_word(word, difficulty) for word in words]
+    "blanked_words": [blank_word(word, difficulty) for word in words]
   }
 
 def blank_word(word: str, difficulty: Difficulty, seed=None) -> str:
