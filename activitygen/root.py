@@ -5,6 +5,7 @@ import random
 
 from . import anagrams
 from . import word_search
+from . import fill_in_the_blanks
 from .themes import themes
 
 bp = Blueprint("root", __name__)
@@ -65,12 +66,14 @@ def themesEndpoint():
 
 activity_map = {
   'anagrams': anagrams.generate_data,
-  'word-search': word_search.generate
+  'word-search': word_search.generate,
+  'fill-in-the-blanks': fill_in_the_blanks.generate
 }
 
 html_gen_map = {
   "anagrams": anagrams.generate_html,
-  "word-search": word_search.generate_html
+  "word-search": word_search.generate_html,
+  "fill-in-the-blanks": fill_in_the_blanks.generate_html
 }
 
 # {
@@ -106,6 +109,14 @@ def generate():
     json.append({"activity": "word-search", "inputs": {
       "hidden_message": puzzleWords.pop(),
       "words": puzzleWords
+    }})
+  
+  for _ in range(body["Fill In the Blanks"]):
+    puzzleWords = random.sample(wordset, min(numWords, 10))
+    json.append({"activity": "fill-in-the-blanks", "inputs": {
+      "theme": body["theme"],
+      "words": puzzleWords,
+      "difficulty": anagrams.Difficulty.HARD
     }})
   
   random.shuffle(json)

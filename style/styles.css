@@ -10,13 +10,11 @@
 
 header {
   height: 30mm;
-  /* cannot use flex so use -webkit-box */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: center;
 }
 
 header h1 {
+  width: 100%;
+  text-align: center;
   font-size: 4rem;
 }
 
@@ -55,7 +53,7 @@ header p {
   height: 161.2mm;
 }
 
-.anagrams-table {
+.anagrams-table, .fill-in-the-blanks-table {
   height: 100%;
   margin: auto;
 }
@@ -68,6 +66,11 @@ header p {
 .anagrams-table td, .word-search-table td {
   font-size: 1.25rem;
   padding: 0 1.5rem;
+}
+
+.fill-in-the-blanks-table td {
+  font-size: 1.4rem;
+  text-align: center;
 }
 
 .anagrams-blanks {
