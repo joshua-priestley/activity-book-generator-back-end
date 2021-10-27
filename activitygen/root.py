@@ -4,8 +4,7 @@ import random
 #from werkzeug.wrappers import request
 
 from . import anagrams
-
-from .maze import Maze
+from . import maze
 from . import word_search
 from .themes import themes
 
@@ -67,12 +66,14 @@ def themesEndpoint():
 
 activity_map = {
   'anagrams': anagrams.generate_data,
-  'word-search': word_search.generate
+  'word-search': word_search.generate,
+  'maze': maze.generate_maze
 }
 
 html_gen_map = {
   "anagrams": anagrams.generate_html,
-  "word-search": word_search.generate_html
+  "word-search": word_search.generate_html,
+  "maze": maze.generate_html
 }
 
 # {
@@ -110,6 +111,22 @@ def generate():
       "hidden_message": puzzleWords.pop(),
       "words": puzzleWords
     }})
+
+  for n in range(body["Maze"]):
+    json.append({
+    "activity": "maze", 
+    "inputs": {
+      "grid_width": 15,
+      "grid_height": 15
+    }, 
+    "html_data": {
+      "title": "maze",
+      "instructions": "Complete the maze"}
+    })
+  #   maze = Maze(15,15,0,0)
+  #   maze.make_maze()
+  #   maze.generate_svg()
+
   
   random.shuffle(json)
 
@@ -128,12 +145,13 @@ def pdf(activities):
     data = process(data, activity)
 
     # Generate HTML and append to output
-    html.append(html_gen_map[activity["activity"]](data))
-
-  maze = Maze(15,15,0,0)
-  maze.make_maze()
-  
-  return pdfkit.from_string("".join(html) + maze.generate_svg(), False, css="style/styles.css", options={
+    if "html_data" in activity:
+      html.append(html_gen_map[activity["activity"]](data, activity["html_data"]))
+    else:  
+      html.append(html_gen_map[activity["activity"]](data))
+    
+    
+  return pdfkit.from_string("".join(html), False, css="style/styles.css", options={
     "encoding": "UTF-8",
     "page-size": "A4",
     "dpi": 400,
@@ -152,4 +170,6 @@ def process(data, activity):
       "hangman_words": hangman_words,
       "words": activity["inputs"]["words"]
     }
+
+
   return data

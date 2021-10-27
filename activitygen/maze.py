@@ -1,5 +1,7 @@
 import random
 
+from flask.templating import render_template
+from flask import Markup
 class Cell:
     
     # A wall separates a pair of cells in the N-S or W-E directions.
@@ -155,3 +157,15 @@ class Maze:
             cell_stack.append(current_cell)
             current_cell = next_cell
             nv += 1
+
+
+def generate_maze(grid_width, grid_height):
+    maze = Maze(grid_width, grid_height, 0, 0)
+    maze.make_maze()
+    svg = maze.generate_svg()
+    return svg
+
+def generate_html(svg, html_data):
+    print(html_data)
+    print(svg)
+    return render_template("maze.html", title=html_data["title"], instructions=html_data["instructions"], svg=Markup(svg))
