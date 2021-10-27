@@ -129,7 +129,7 @@ class Maze:
             x2, y2 = cell.x + dx, cell.y + dy
             if (0 <= x2 < self.nx) and (0 <= y2 < self.ny):
                 neighbour = self.cell_at(x2, y2)
-                if neighbour.is_in_grid() and neighbour.has_all_walls():
+                if neighbour.has_all_walls():
                     neighbours.append((direction, neighbour))
         return neighbours
 

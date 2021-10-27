@@ -5,18 +5,22 @@
 {% endblock %}
 
 {% block instructions %}
-  The following words have been scrambled! Can you rearrange the letters to find each {{theme}} themed word?
+  <div class="instructions-1">
+    The following words have been scrambled! Can you rearrange the letters to find each {{theme}} themed word?
+  </div>
 {% endblock %}
 
 {% block content %}
-  <table class="anagrams-table">
-    <tbody>
-      {% for anagram, blanks in data %}
-        <tr>
-          <td>{{anagram}}</td>
-          <td><span class="anagrams-blanks">{{blanks}}</span></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="content-1">
+    <table class="anagrams-table">
+      <tbody>
+        {% for anagram, blanks in data %}
+          <tr>
+            <td>{{anagram}}</td>
+            <td><span class="anagrams-blanks">{{blanks}}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

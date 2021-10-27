@@ -1,12 +1,29 @@
-from flask import Flask
+from flask import Flask, session
+from flask_session import Session
+from flask_cors import CORS
+import redis
+import os
 
 def create_app(test_config=None):
   """Application factory"""
   app = Flask(__name__)
-
+ 
   # Use test config if supplied
   if test_config:
     app.config.from_mapping(test_config)
+  
+  app.config["SESSION_TYPE"]  = "redis"
+  app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
+  app.config['SECRET_KEY'] = 'super secret key'   
+
+  sess = Session()
+  sess.init_app(app)
+
+  origins = ["http://localhost:3000"]
+  if "FRONT_END_URL" in os.environ:
+    origins.append(os.environ["FRONT_END_URL"])
+
+  CORS(app, origins = origins, supports_credentials=True)
 
   # Register blueprints
   from . import root, anagrams
@@ -14,4 +31,3 @@ def create_app(test_config=None):
   app.register_blueprint(anagrams.bp)
 
   return app
- 

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block header %}
+  Word search
+{% endblock %}
+
+{% block instructions %}
+  <div class="instructions-2">
+    <p>Some words have been hidden in this square board. You can find them written in a row, column
+    or diagonally, from left to right or viceversa.</p> 
+    <p>The words you are looking for are: {{words|join(", ")}}.</p>
+    <p>Find all these words and circle them on the board. Once you're done, look at the unused letters
+    and find the hidden message. In order to do this, keep in mind that each 2 consecutive letters composing the hidden
+    message have the same number of unused letters between them.</p>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="content-2">
+    <table class="word-search-table">
+      <tbody>
+        {% for row in cells %}
+          <tr>
+            {% for cell in row %}
+              <td>{{cell}}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  
+    <div class="hangman-text">
+      {% if hangman_words %}
+        Complete the hidden message in the space below:
+        <p>{{hangman_words|join('  ')}}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
