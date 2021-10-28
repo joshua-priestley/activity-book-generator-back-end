@@ -1,4 +1,3 @@
-import copy
 import random
 import numpy as np
 
@@ -106,7 +105,7 @@ class Board:
         return True
 
     # Generates playable Sudoku board depending on difficulty given by removing grid numbers one at a time until the
-    # diffuculty level is met, while ensuring still only one unique solution exists
+    # difficulty level is met, while ensuring still only one unique solution exists
     def gen_sudoku(self, difficulty=1):
         if difficulty not in [0, 1, 2]:
             raise ValueError("Enter number for difficulty\n0: simple\n1: normal\n2: hard")
@@ -124,36 +123,58 @@ class Board:
                 n = self.board[row][col]
                 self.board[row][col] = 0
 
-                if not self.is_unique_sol():
-                    self.board[row][col] = n
-                    continue
+                # TODO uncomment checking for unique solution
+                # if not self.is_unique_sol():
+                #     self.board[row][col] = n
+                #     continue
 
                 grids_to_remove -= 1
 
         return self.board, solution
 
+    def gen_themed_sudoku(self, word, difficulty=1):
+        if (not len(word) == 9) or (not len(set(word)) == len(word)):
+            raise ValueError("Please enter 9 letter word with no repeated letters")
+
+        sudoku, solution = self.gen_sudoku(difficulty)
+
+        themed_sudoku = np.empty(sudoku.shape, dtype=object)
+        themed_solution = np.empty(sudoku.shape, dtype=object)
+
+        for row, col in np.ndindex(sudoku.shape):
+            if sudoku[row, col] != 0:
+                themed_sudoku[row, col] = word[int(sudoku[row, col] - 1)]
+            else:
+                themed_sudoku[row, col] = '-'
+
+        for row, col in np.ndindex(solution.shape):
+            themed_solution[row, col] = word[int(solution[row, col] - 1)]
+
+        return themed_sudoku, themed_solution
+
 
 if __name__ == '__main__':
-    # completed = [[3, 9, 1, 2, 8, 6, 5, 7, 4],
-    #              [4, 8, 7, 3, 5, 9, 1, 2, 6],
-    #              [6, 5, 2, 7, 1, 4, 8, 3, 9],
-    #              [8, 7, 5, 4, 3, 1, 6, 9, 2],
-    #              [2, 1, 3, 9, 6, 7, 4, 8, 5],
-    #              [9, 6, 4, 5, 2, 8, 7, 1, 3],
-    #              [1, 4, 9, 6, 7, 3, 2, 5, 8],
-    #              [5, 3, 8, 1, 4, 2, 9, 6, 7],
-    #              [7, 2, 6, 8, 9, 5, 3, 4, 1]]
-    # not_uniqe = [[2, 9, 5, 7, 4, 3, 8, 6, 1],
-    #              [4, 3, 1, 8, 6, 5, 9, 0, 0],
-    #              [8, 7, 6, 1, 9, 2, 5, 4, 3],
-    #              [3, 8, 7, 4, 5, 9, 2, 1, 6],
-    #              [6, 1, 2, 3, 8, 7, 4, 9, 5],
-    #              [5, 4, 9, 2, 1, 6, 7, 3, 8],
-    #              [7, 6, 3, 5, 2, 4, 1, 8, 9],
-    #              [9, 2, 8, 6, 7, 1, 3, 5, 4],
-    #              [1, 5, 4, 9, 3, 8, 6, 0, 0]]
-
     b = Board()
-    sudoku, solution = b.gen_sudoku(1)
+    sudoku, solution = b.gen_themed_sudoku("CAULDRONS", 1)
 
     print("Puzzle:\n", sudoku, "\nSolution:\n", solution)
+
+
+# completed = [[3, 9, 1, 2, 8, 6, 5, 7, 4],
+#              [4, 8, 7, 3, 5, 9, 1, 2, 6],
+#              [6, 5, 2, 7, 1, 4, 8, 3, 9],
+#              [8, 7, 5, 4, 3, 1, 6, 9, 2],
+#              [2, 1, 3, 9, 6, 7, 4, 8, 5],
+#              [9, 6, 4, 5, 2, 8, 7, 1, 3],
+#              [1, 4, 9, 6, 7, 3, 2, 5, 8],
+#              [5, 3, 8, 1, 4, 2, 9, 6, 7],
+#              [7, 2, 6, 8, 9, 5, 3, 4, 1]]
+# not_uniqe = [[2, 9, 5, 7, 4, 3, 8, 6, 1],
+#              [4, 3, 1, 8, 6, 5, 9, 0, 0],
+#              [8, 7, 6, 1, 9, 2, 5, 4, 3],
+#              [3, 8, 7, 4, 5, 9, 2, 1, 6],
+#              [6, 1, 2, 3, 8, 7, 4, 9, 5],
+#              [5, 4, 9, 2, 1, 6, 7, 3, 8],
+#              [7, 6, 3, 5, 2, 4, 1, 8, 9],
+#              [9, 2, 8, 6, 7, 1, 3, 5, 4],
+#              [1, 5, 4, 9, 3, 8, 6, 0, 0]]
