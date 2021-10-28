@@ -54,7 +54,7 @@ class Board:
                 self.board[row][col] = _num
                 _l.remove(_num)
 
-    def gen_complete_board(self):
+    def gen_filled_board(self):
         self.zero_board()
 
         for i in range(0, 7, 3):
@@ -62,7 +62,7 @@ class Board:
 
         return self.gen_recursive()
 
-    def gen_recursive(self):  # uses recursion to finish generating a random board
+    def gen_recursive(self):
         row, col = self.find_empty_grid()
         if not row.size == 0:
             _num = random.randint(1, 9)
@@ -79,6 +79,46 @@ class Board:
             self.gen_recursive()
 
         return True
+
+    def is_unique_sol(self):
+        for row, col in np.ndindex(self.board.shape):
+            if self.board[row, col] == 0:
+                counter = 0
+                for n in range(10):
+                    if counter > 1:
+                        return False
+                    if self.check_insert_num(n, (row, col)):
+                        self.board[row][col] = n
+                        a = Board()
+                        a.board = np.copy(self.board)
+                        if a.solve():
+                            counter += 1
+                        self.board[row][col] = 0
+        return True
+
+    def gen_sudoku(self, difficulty=1):
+        if difficulty not in [0, 1, 2]:
+            raise ValueError("Enter number for difficulty\n0: simple\n1: normal\n2: hard")
+
+        grids_to_remove = [36, 46, 52][difficulty]
+
+        self.gen_filled_board()
+
+        while grids_to_remove > 0:
+            row = random.randint(0, 8)
+            col = random.randint(0, 8)
+
+            if self.board[row][col] != 0:
+                n = self.board[row][col]
+                self.board[row][col] = 0
+
+                if not self.is_unique_sol():
+                    self.board[row][col] = n
+                    continue
+
+                grids_to_remove -= 1
+
+        return self.board
 
 
 if __name__ == '__main__':
@@ -108,9 +148,35 @@ if __name__ == '__main__':
     #
     # print(b.board)
 
-    a = Board()
+    # a = Board()
+    #
+    # # a.gen_complete_board()
+    # print(a.gen_complete_board())
+    # print(a.board)
 
-    # a.gen_complete_board()
-    print(a.gen_complete_board())
-    print(a.board)
 
+    # c = Board()
+    #
+    # not_uniqe = [[2, 9, 5, 7, 4, 3, 8, 6, 1],
+    #              [4, 3, 1, 8, 6, 5, 9, 0, 0],
+    #              [8, 7, 6, 1, 9, 2, 5, 4, 3],
+    #              [3, 8, 7, 4, 5, 9, 2, 1, 6],
+    #              [6, 1, 2, 3, 8, 7, 4, 9, 5],
+    #              [5, 4, 9, 2, 1, 6, 7, 3, 8],
+    #              [7, 6, 3, 5, 2, 4, 1, 8, 9],
+    #              [9, 2, 8, 6, 7, 1, 3, 5, 4],
+    #              [1, 5, 4, 9, 3, 8, 6, 0, 0]]
+    #
+    # c.board = np.array(not_uniqe)
+    #
+    # print(c.is_unique_sol())
+
+    d = Board()
+
+    d.gen_sudoku(0)
+
+    print(d.board)
+
+    d.solve()
+
+    print(d.board)
