@@ -4,6 +4,7 @@ import random
 #from werkzeug.wrappers import request
 
 from . import anagrams
+from . import maze
 from . import word_search
 from . import fill_in_the_blanks
 from .themes import themes
@@ -67,13 +68,15 @@ def themesEndpoint():
 activity_map = {
   'anagrams': anagrams.generate_data,
   'word-search': word_search.generate,
-  'fill-in-the-blanks': fill_in_the_blanks.generate
+  'fill-in-the-blanks': fill_in_the_blanks.generate,
+  'maze': maze.generate_maze
 }
 
 html_gen_map = {
   "anagrams": anagrams.generate_html,
   "word-search": word_search.generate_html,
-  "fill-in-the-blanks": fill_in_the_blanks.generate_html
+  "fill-in-the-blanks": fill_in_the_blanks.generate_html,
+  "maze": maze.generate_html
 }
 
 # {
@@ -89,6 +92,7 @@ def generate():
 
   if "custom themes" in session:
     userThemes = { **userThemes, **session["custom themes"] }
+
 
   wordset = userThemes[body["theme"]]
   numWords = len(wordset)
@@ -110,6 +114,22 @@ def generate():
       "hidden_message": puzzleWords.pop(),
       "words": puzzleWords
     }})
+
+  for n in range(body["Maze"]):
+    json.append({
+    "activity": "maze", 
+    "inputs": {
+      "grid_width": 15,
+      "grid_height": 15
+    }, 
+    "html_data": {
+      "title": "maze",
+      "instructions": "Complete the maze"}
+    })
+  #   maze = Maze(15,15,0,0)
+  #   maze.make_maze()
+  #   maze.generate_svg()
+
   
   for _ in range(body["Fill In the Blanks"]):
     puzzleWords = random.sample(wordset, min(numWords, 10))
@@ -136,8 +156,12 @@ def pdf(activities):
     data = process(data, activity)
 
     # Generate HTML and append to output
-    html.append(html_gen_map[activity["activity"]](data))
-
+    if "html_data" in activity:
+      html.append(html_gen_map[activity["activity"]](data, activity["html_data"]))
+    else:  
+      html.append(html_gen_map[activity["activity"]](data))
+    
+    
   return pdfkit.from_string("".join(html), False, css="style/styles.css", options={
     "encoding": "UTF-8",
     "page-size": "A4",
@@ -157,4 +181,6 @@ def process(data, activity):
       "hangman_words": hangman_words,
       "words": activity["inputs"]["words"]
     }
+
+
   return data
