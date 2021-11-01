@@ -6,3 +6,5 @@ redis
 pdfkit
 wkhtmltopdf
 flask-cors
+
+numpy
