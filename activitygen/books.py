@@ -50,3 +50,26 @@ def books():
     mongo.users.update_one({ '_id' : ObjectId(userId), 'books.book_id' : ObjectId(book_id) }, { '$set' : { 'books.$.title' : title } })
 
     return make_response(jsonify({'updated book' : book_id}), 200)
+
+@bp.route("/content", methods=["GET", "PATCH"])
+def content():
+  if 'userId' not in session:
+    data = { 'invalid' : 'not logged in' }
+    return make_response(jsonify(data), 400)
+
+  userId = session['userId']
+  book_id = request.args.get('book_id')
+
+  if request.method == 'GET':
+    book = mongo.books.find_one({ '_id': ObjectId(book_id), 'parent' : ObjectId(userId) })
+
+    return make_response(jsonify(book['components']), 200)
+
+  elif request.method == 'PATCH':
+
+    components = request.get_json()
+    
+    result = mongo.books.update_one({ '_id': ObjectId(book_id), 'parent' : ObjectId(userId) }, { '$set' : { 'components' : components } })
+
+    return make_response(jsonify({ "updated" : result.modified_count }), 200)
+  
