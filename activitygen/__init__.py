@@ -11,9 +11,9 @@ def create_app(test_config=None):
   # Use test config if supplied
   if test_config:
     app.config.from_mapping(test_config)
-  
+
   app.config["SESSION_TYPE"]  = "redis"
-  app.config["SESSION_REDIS"] = redis.from_url('redis://db:6379')
+  app.config["SESSION_REDIS"] = redis.from_url('redis://redis:6379')
   app.config['SECRET_KEY'] = 'super secret key'   
 
   sess = Session()
@@ -26,8 +26,10 @@ def create_app(test_config=None):
   CORS(app, origins = origins, supports_credentials=True)
 
   # Register blueprints
-  from . import root, anagrams
+  from . import root, anagrams, login, books
   app.register_blueprint(root.bp)
   app.register_blueprint(anagrams.bp)
+  app.register_blueprint(login.bp)
+  app.register_blueprint(books.bp)
 
   return app
