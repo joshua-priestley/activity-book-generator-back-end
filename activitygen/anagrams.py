@@ -1,9 +1,11 @@
 import re
 from enum import Enum
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from functools import total_ordering
 from random import getrandbits, Random
 from typing import Dict, List
+
+from .themes import pick_words
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")
 
@@ -12,10 +14,30 @@ class Difficulty(Enum):
   EASY = 0
   MEDIUM = 1
   HARD = 2
+
   def __lt__(self, other):
     return self.value < other.value
 
+  @staticmethod
+  def from_str(s, default):
+    try:
+      return Difficulty[s.upper()]
+    except (AttributeError, KeyError):
+      return default
+
+
 bp = Blueprint("anagrams", __name__, url_prefix="/anagrams")
+
+@bp.route("/state")
+def get_state():
+  """Returns internal anagrams state from provided options"""
+  theme = request.args.get("theme", "christmas")
+  difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
+  count = int(request.args.get("count", 10))
+
+  words = pick_words(theme, count)
+
+  return generate_data(theme, words, difficulty)
 
 def generate_html(anagrams_data: Dict) -> str:
   """Generates HTML from internal data representation of anagrams"""
