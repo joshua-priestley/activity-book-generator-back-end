@@ -2,7 +2,7 @@ import random
 import re
 from typing import List
 
-ALPHABETIC = re.compile(r"[a-zA-Z]")
+ALPHABETIC = re.compile(r"[a-zA-Z]+")
 
 themes = {
   "christmas" : ["santa", "christmas tree", "reindeer", "present", "elf", "snowman", "bauble", "stocking", "christmas pudding", "turkey", "angel", "jesus", "evergreen", "sleigh"],
