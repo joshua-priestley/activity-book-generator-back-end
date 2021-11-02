@@ -26,7 +26,7 @@ class Difficulty(Enum):
       return default
 
 
-bp = Blueprint("anagrams", __name__, url_prefix="/anagrams")
+bp = Blueprint("anagrams", __name__, url_prefix="/activities/anagrams")
 
 @bp.route("/state")
 def get_state():

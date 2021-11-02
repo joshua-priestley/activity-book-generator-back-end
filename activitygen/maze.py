@@ -159,7 +159,7 @@ class Maze:
             nv += 1
 
 
-bp = Blueprint("maze", __name__, url_prefix="/maze")
+bp = Blueprint("maze", __name__, url_prefix="/activities/maze")
 
 @bp.route("/state")
 def get_state():

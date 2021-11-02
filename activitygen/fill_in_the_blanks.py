@@ -12,7 +12,7 @@ letters_to_blank = {
   Difficulty.HARD: (1 / 3, 1 / 2)
 }
 
-bp = Blueprint("fill-in-the-blanks", __name__, url_prefix="/fill-in-the-blanks")
+bp = Blueprint("fill-in-the-blanks", __name__, url_prefix="/activities/fill-in-the-blanks")
 
 @bp.route("/state")
 def get_state():

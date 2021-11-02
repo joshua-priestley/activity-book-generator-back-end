@@ -11,11 +11,11 @@ MAX_ATTEMPTS = 100
 
 directions = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
 
-bp = Blueprint("word-search", __name__, url_prefix="/word-search")
+bp = Blueprint("word-search", __name__, url_prefix="/activities/word-search")
 
 @bp.route("/state")
 def get_state():
-  """Returns internal anagrams state from provided options"""
+  """Returns internal word search state from provided options"""
   theme = request.args.get("theme", "christmas")
   count = int(request.args.get("count", 5))
   hidden_message = request.args.get("hidden-message")
