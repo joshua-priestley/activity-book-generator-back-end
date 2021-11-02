@@ -11,7 +11,7 @@ test:
     - name: redis:6-alpine
       alias: db
   script:
-    - export PYTHONPATH=/usr/lib/python3.8/site-packages
+    - export PYTHONPATH=/usr/lib/python3.9/site-packages
     - apk add --update --no-cache py3-numpy
     - pip install -r requirements.txt
     - python -m coverage run -m pytest
