@@ -1,7 +1,7 @@
 import random
 
 from flask.templating import render_template
-from flask import Markup
+from flask import Blueprint, Markup, request
 class Cell:
     
     # A wall separates a pair of cells in the N-S or W-E directions.
@@ -158,6 +158,16 @@ class Maze:
             current_cell = next_cell
             nv += 1
 
+
+bp = Blueprint("maze", __name__, url_prefix="/maze")
+
+@bp.route("/state")
+def get_state():
+  """Returns internal maze state from provided options"""
+  grid_width = int(request.args.get("width", 15))
+  grid_height = int(request.args.get("height", 15))
+
+  return generate_maze(grid_width, grid_height)
 
 def generate_maze(grid_width, grid_height):
     maze = Maze(grid_width, grid_height, 0, 0)
