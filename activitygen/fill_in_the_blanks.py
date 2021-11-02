@@ -1,7 +1,9 @@
 from .anagrams import Difficulty
-from flask import render_template
+from flask import Blueprint, render_template, request
 from random import Random
 from typing import Dict, List
+
+from .themes import pick_words
 
 # (min, max) proportion of letters to blank out, based on difficulty
 letters_to_blank = {
@@ -9,6 +11,19 @@ letters_to_blank = {
   Difficulty.MEDIUM: (1 / 5, 1 / 3),
   Difficulty.HARD: (1 / 3, 1 / 2)
 }
+
+bp = Blueprint("fill-in-the-blanks", __name__, url_prefix="/activities/fill-in-the-blanks")
+
+@bp.route("/state")
+def get_state():
+  """Returns internal fill in the blanks state from provided options"""
+  theme = request.args.get("theme", "christmas")
+  difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
+  count = int(request.args.get("count", 10))
+
+  words = pick_words(theme, count)
+
+  return generate(theme, words, difficulty)
 
 def generate_html(fill_in_the_blanks_data: Dict):
   """Generates HTML from internal data representation of Fill In the Blanks"""

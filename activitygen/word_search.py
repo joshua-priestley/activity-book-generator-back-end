@@ -2,12 +2,33 @@ from math import sqrt, floor, log2, pow
 from random import shuffle, randint
 import string
 
-from flask.templating import render_template
+from flask import Blueprint, jsonify, render_template, request
+
+from .themes import pick_words
 
 MAX_GRID_LENGTH = 15
 MAX_ATTEMPTS = 100
 
 directions = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
+
+bp = Blueprint("word-search", __name__, url_prefix="/activities/word-search")
+
+@bp.route("/state")
+def get_state():
+  """Returns internal word search state from provided options"""
+  theme = request.args.get("theme", "christmas")
+  count = int(request.args.get("count", 5))
+  hidden_message = request.args.get("hidden-message")
+
+  words = pick_words(theme, count, allow_multiword=False)
+
+  cells, hangman_words, word_positions = generate(words, hidden_message)
+  return {
+    "cells": cells,
+    "words": words,
+    "hangman_words": hangman_words,
+    "word_positions": word_positions
+  }
 
 def compute_grid_length(min_length, total):
   # Setup the array for the binary search
