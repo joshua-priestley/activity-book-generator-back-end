@@ -15,7 +15,12 @@ def books():
   if request.method == 'GET':
     user = mongo.users.find_one({ '_id' : ObjectId(userId) })
 
-    return make_response(str(user['books']), 200)
+    res = list(user['books'])
+
+    for i in range(len(res)):
+      res[i]['book_id'] = str(res[i]['book_id'])
+
+    return make_response(jsonify(res), 200)
 
   elif request.method == 'POST':
 
