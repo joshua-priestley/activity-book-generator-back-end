@@ -11,7 +11,7 @@ themes = {
   "cities" : ["london", "new york", "chicago", "los angeles", "edinburgh", "hong kong", "tokyo", "singapore", "amsterdam", "berlin", "singapore", "sydney", "melbourne", "bangkok", "dubai", "milan", "toronto", "budapest", "shanghai"]
 }
 
-def pick_words(theme: str, count: int, allow_multiword=True) -> List[str]:
+def pick_words(theme: str, count: int, allow_multiword=True, already_used=[]) -> List[str]:
   """
   Return a list of 'count' randomly selected words for given theme 'theme'.
   If 'allow_multiword' is false, selections consisting of multiple words (e.g., space-separated or hyphen-separated) will not be included.
@@ -19,6 +19,8 @@ def pick_words(theme: str, count: int, allow_multiword=True) -> List[str]:
   word_bank = themes[theme]
   if not allow_multiword:
     word_bank = list(filter(ALPHABETIC.fullmatch, word_bank))
+
+  word_bank = list(filter(lambda w: w not in already_used, word_bank))
 
   words = random.sample(word_bank, count)
   return words

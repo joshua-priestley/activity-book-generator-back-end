@@ -19,8 +19,13 @@ def get_state():
   theme = request.args.get("theme", "christmas")
   count = int(request.args.get("count", 5))
   hidden_message = request.args.get("hidden-message")
+  extraWords = request.args.get("words", [])
 
-  words = pick_words(theme, count, allow_multiword=False)
+  if extraWords != []:
+    extraWords = extraWords.split(",")
+    count -= len(extraWords)
+
+  words = pick_words(theme, count, allow_multiword=False) + extraWords
 
   cells, hangman_words, word_positions = generate(words, hidden_message)
   return {
