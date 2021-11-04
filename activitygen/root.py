@@ -22,7 +22,7 @@ def puzzles():
 @bp.route("/whoami")
 @check_token
 def whoami():
-  return jsonify({"user" : str(request.user.email) })
+  return jsonify({"user" : str(request.user["email"]) })
 
 #@bp.route("/word-search")
 #def word_search_endpoint():
