@@ -4,7 +4,7 @@ from flask import Flask, request
 from functools import wraps
 
 # Add a folder called key and file containing the admin sdk key
-cred = credentials.Certificate("../keys/themed-activity-book-firebase-adminsdk.json")
+cred = credentials.Certificate("keys/themed-activity-book-firebase-adminsdk.json")
 
 app = firebase_admin.initialize_app(cred)
 
