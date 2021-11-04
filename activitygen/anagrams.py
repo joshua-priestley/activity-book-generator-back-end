@@ -39,7 +39,7 @@ def get_state():
 
   return {
     "description": [f"The following words have been scrambled! Can you rearrange the letters to find each {theme} themed word?"],
-    **generate_data(theme, words, difficulty)
+    **generate_data(theme, words)
   }
 
 def generate_html(anagrams_data: Dict) -> str:

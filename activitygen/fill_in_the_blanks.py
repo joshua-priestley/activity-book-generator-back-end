@@ -25,7 +25,7 @@ def get_state():
 
   return {
     "description": [f"Some letters from the following words are missing! Can you fill in the blanks to complete each {theme} themed word?"],
-    **generate(theme, words, difficulty)
+    **generate(theme, words)
   }
 
 def generate_html(fill_in_the_blanks_data: Dict):

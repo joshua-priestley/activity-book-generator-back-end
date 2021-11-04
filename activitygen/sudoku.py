@@ -2,6 +2,8 @@ import random
 import numpy as np
 from flask import Blueprint, request
 
+from activitygen.anagrams import Difficulty
+
 
 class Board:
     def __init__(self):
@@ -158,11 +160,11 @@ bp = Blueprint("sudoku", __name__, url_prefix="/activities/sudoku")
 @bp.route("/state")
 def get_state():
     """Returns internal sudoku state from provided options"""
-    difficulty = int(request.args.get("difficulty"))
+    difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
     word = request.args.get("word", "CAULDRONS")
 
     b = Board()
-    sudoku, solution = b.gen_themed_sudoku(word, difficulty)
+    sudoku, solution = b.gen_themed_sudoku(word)
     return {
         "description": [
             f"Complete the following 9x9 grid using the characters from the word '{word}', "
