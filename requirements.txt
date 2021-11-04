@@ -3,11 +3,7 @@ pytest==6.2.5
 coverage==6.0.2
 flask-session
 redis
-pdfkit
-wkhtmltopdf
 flask-cors
 numpy
 pymongo
-
-
 firebase-admin

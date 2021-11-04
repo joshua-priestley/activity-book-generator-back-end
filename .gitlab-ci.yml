@@ -5,14 +5,14 @@ stages:
 test:
   tags:
     - docker
-  image: python:alpine
+  image: python:bullseye
   stage: test
   services:
     - name: redis:6-alpine
-      alias: db
+      alias: redis
+    - name: bitnami/mongodb:5.0
+      alias: mongo
   script:
-    - export PYTHONPATH=/usr/lib/python3.9/site-packages
-    - apk add --update --no-cache py3-numpy
     - pip install -r requirements.txt
     - python -m coverage run -m pytest
     - python -m pytest -v
