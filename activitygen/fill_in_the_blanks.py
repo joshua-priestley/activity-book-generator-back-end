@@ -23,7 +23,10 @@ def get_state():
 
   words = pick_words(theme, count)
 
-  return generate(theme, words, difficulty)
+  return {
+    "description": [f"Some letters from the following words are missing! Can you fill in the blanks to complete each {theme} themed word?"],
+    **generate(theme, words, difficulty)
+  }
 
 def generate_html(fill_in_the_blanks_data: Dict):
   """Generates HTML from internal data representation of Fill In the Blanks"""
