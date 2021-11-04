@@ -19,6 +19,8 @@ def get_state():
   theme = request.args.get("theme", "christmas")
   count = int(request.args.get("count", 5))
   hidden_message = request.args.get("hidden-message")
+  # Ignore hidden message if empty string
+  hidden_message = hidden_message if hidden_message else None
   extraWords = request.args.get("words", [])
 
   if extraWords != []:
@@ -28,7 +30,19 @@ def get_state():
   words = pick_words(theme, count, allow_multiword=False) + extraWords
 
   cells, hangman_words, word_positions = generate(words, hidden_message)
+  description = [
+    "Some words have been hidden in this square board. You can find them written in a row, column "
+    "or diagonally, from left to right or viceversa.",
+    f"The words you are looking for are: {', '.join(words)}.",
+  ]
+  if hidden_message:
+    description.append(
+      "Find all these words and circle them on the board. Once you're done, look at the unused letters "
+      "and find the hidden message. In order to do this, keep in mind that each 2 consecutive letters composing the hidden "
+      "message have the same number of unused letters between them."
+    )
   return {
+    "description": description,
     "cells": cells,
     "words": words,
     "hangman_words": hangman_words,
