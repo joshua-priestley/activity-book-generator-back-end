@@ -9,8 +9,8 @@ services:
       - FRONT_END_URL
     ports:
       - ${APP_PORT}:5000
-    volumes:
-      - ${FIREBASE_ADMINSDK_KEY}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
+    # volumes:
+    #   - ${FIREBASE_ADMINSDK_KEY}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
   redis:
     image: redis:6-alpine
   mongo:

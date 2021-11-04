@@ -7,7 +7,7 @@ from . import maze
 from . import word_search
 from . import fill_in_the_blanks
 from .themes import themes
-from .firebase import check_token
+# from .firebase import check_token
 
 bp = Blueprint("root", __name__)
 
@@ -19,10 +19,10 @@ def root():
 def puzzles():
   return jsonify(["Word Search", "Anagrams"])
 
-@bp.route("/whoami")
-@check_token
-def whoami():
-  return jsonify({"user" : str(request.user["email"]) })
+# @bp.route("/whoami")
+# @check_token
+# def whoami():
+#   return jsonify({"user" : str(request.user["email"]) })
 
 #@bp.route("/word-search")
 #def word_search_endpoint():
