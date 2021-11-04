@@ -167,7 +167,10 @@ def get_state():
   grid_width = int(request.args.get("width", 15))
   grid_height = int(request.args.get("height", 15))
 
-  return generate_maze(grid_width, grid_height)
+  return {
+    "description": ["Complete the maze."],
+    "svg": generate_maze(grid_width, grid_height)
+  }
 
 def generate_maze(grid_width, grid_height):
     maze = Maze(grid_width, grid_height, 0, 0)
