@@ -1,5 +1,7 @@
 venv/
 
+keys/
+
 **/*.pyc
 **/__pycache__/
 
