@@ -1,4 +1,5 @@
 import random
+from re import S
 
 from flask.templating import render_template
 from flask import Blueprint, Markup, request
@@ -35,9 +36,34 @@ class Maze:
 
         """
 
-        self.nx, self.ny = nx, ny
+        shaped_map = [
+        [1,1,1,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1]
+        ]
+
+        self.nx, self.ny = len(shaped_map), len(shaped_map[0])
+        #self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
         self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
+        
+       
+        for x in range(self.nx):
+            for y in range(self.ny):
+                # Sets cell to be out of bounds if not part of the shaped map
+                self.maze_map[y][x].inBounds =  shaped_map[x][y] == 1
 
     def cell_at(self, x, y):
         """Return the Cell object at (x,y)."""
@@ -78,12 +104,7 @@ class Maze:
         scy, scx = height / self.ny, width / self.nx
 
         svg = ""
-        
-        def write_wall(svg, ww_x1, ww_y1, ww_x2, ww_y2):
-            """Write a single wall to the SVG."""
-
-            svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(ww_x1, ww_y1, ww_x2, ww_y2)
-
+    
        
         # SVG preamble and styles.
         # svg +='<?xml version="1.0" encoding="utf-8"?>'
@@ -102,19 +123,30 @@ class Maze:
         # general).
         for x in range(self.nx):
             for y in range(self.ny):
-                if self.cell_at(x, y).walls['S']:
-                    x1, y1, x2, y2 = x * scx, (y + 1) * scy, (x + 1) * scx, (y + 1) * scy
-                    
-                    # Write a wall to svg 
-                    svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
-                if self.cell_at(x, y).walls['E']:
-                    x1, y1, x2, y2 = (x + 1) * scx, y * scy, (x + 1) * scx, (y + 1) * scy
-                    # Write a wall to svg
-                    svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+                if (self.cell_at(x,y).inBounds):
+                    if self.cell_at(x, y).walls['S']:
+                        x1, y1, x2, y2 = x * scx, (y + 1) * scy, (x + 1) * scx, (y + 1) * scy
+                        
+                        # Write a wall to svg 
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+                    if self.cell_at(x, y).walls['E']:
+                        x1, y1, x2, y2 = (x + 1) * scx, y * scy, (x + 1) * scx, (y + 1) * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+
+                    if self.cell_at(x, y).walls['N']:
+                        x1, y1, x2, y2 = x * scx, y * scy, (x + 1) * scx, y * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)  
+
+                    if self.cell_at(x, y).walls['W']:
+                        x1, y1, x2, y2 = x * scx, y * scy, x * scx, (y + 1) * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)        
 
         # Draw the North and West maze border
-        svg +=('<line x1="0" y1="0" x2="{}" y2="0"/>'.format(width))
-        svg +=('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height))
+        # svg +=('<line x1="0" y1="0" x2="{}" y2="0"/>'.format(width))
+        # svg +=('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height))
         svg +=('</svg>')
 
         return svg
@@ -129,7 +161,8 @@ class Maze:
         neighbours = []
         for direction, (dx, dy) in delta:
             x2, y2 = cell.x + dx, cell.y + dy
-            if (0 <= x2 < self.nx) and (0 <= y2 < self.ny):
+            if (0 <= x2 < self.nx) and (0 <= y2 < self.ny) and (self.cell_at(x2, y2).inBounds):
+                #print(f"Neighbour {x2}, {y2}")
                 neighbour = self.cell_at(x2, y2)
                 if neighbour.has_all_walls():
                     neighbours.append((direction, neighbour))
@@ -140,22 +173,30 @@ class Maze:
         n = self.nx * self.ny
         cell_stack = []
         current_cell = self.cell_at(self.ix, self.iy)
+        
         # Total number of visited cells during maze construction.
         nv = 1
 
+        print(current_cell)
         while nv < n:
-            neighbours = self.find_valid_neighbours(current_cell)
+            print(current_cell.x, current_cell.y)
+            if (current_cell.inBounds):
+            
+                neighbours = self.find_valid_neighbours(current_cell)
 
-            if not neighbours:
-                # We've reached a dead end: backtrack.
-                current_cell = cell_stack.pop()
-                continue
+                if not neighbours:
+                    # We've reached a dead end: backtrack.
+                    if cell_stack:
+                        current_cell = cell_stack.pop() 
+                    else:
+                        break
+                    continue
 
-            # Choose a random neighbouring cell and move to it.
-            direction, next_cell = random.choice(neighbours)
-            current_cell.remove_wall(next_cell, direction)
-            cell_stack.append(current_cell)
-            current_cell = next_cell
+                # Choose a random neighbouring cell and move to it.
+                direction, next_cell = random.choice(neighbours)
+                current_cell.remove_wall(next_cell, direction)
+                cell_stack.append(current_cell)
+                current_cell = next_cell
             nv += 1
 
 
@@ -182,3 +223,11 @@ def generate_html(svg, html_data):
     print(html_data)
     print(svg)
     return render_template("maze.html", title=html_data["title"], instructions=html_data["instructions"], svg=Markup(svg))
+
+
+
+if __name__ == '__main__':
+    generate_maze(15,15)
+
+    #print()
+    
