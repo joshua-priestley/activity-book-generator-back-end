@@ -164,7 +164,7 @@ def get_state():
     word = request.args.get("word", "CAULDRONS")
 
     b = Board()
-    sudoku, solution = b.gen_themed_sudoku(word)
+    sudoku, solution = b.gen_themed_sudoku(word, difficulty.value)
     return {
         "description": [
             f"Complete the following 9x9 grid using the characters from the word '{word}', "
