@@ -20,9 +20,16 @@ class Difficulty(Enum):
 
   @staticmethod
   def from_str(s, default):
+    # Try initialising from name string (e.g. "hard", "HARD")
     try:
       return Difficulty[s.upper()]
     except (AttributeError, KeyError):
+      pass
+    # Otherwise try initialising from integer string (e.g. "2")
+    try:
+      return Difficulty(int(s))
+    except:
+      # Otherwise return default
       return default
 
 
@@ -33,6 +40,7 @@ def get_state():
   """Returns internal anagrams state from provided options"""
   theme = request.args.get("theme", "christmas")
   difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
+  print(f"Difficulty: {difficulty}")
   count = int(request.args.get("count", 10))
 
   words = pick_words(theme, count)
