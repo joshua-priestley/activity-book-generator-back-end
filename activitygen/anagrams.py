@@ -15,7 +15,6 @@ def get_state():
   """Returns internal anagrams state from provided options"""
   theme = request.args.get("theme", "christmas")
   difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
-  print(f"Difficulty: {difficulty}")
   count = int(request.args.get("count", 10))
 
   words = pick_words(theme, count)
