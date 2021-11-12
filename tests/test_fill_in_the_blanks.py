@@ -1,5 +1,5 @@
 import pytest
-from activitygen.anagrams import Difficulty
+from activitygen.commons import Difficulty
 from activitygen.fill_in_the_blanks import blank_word, generate, generate_html
 
 SAMPLE_WORDS = ["cow", "reindeer", "skeleton", "princess", "christmas tree", "a", "tv"]

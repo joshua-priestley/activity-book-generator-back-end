@@ -2,7 +2,7 @@ import random
 import numpy as np
 from flask import Blueprint, request
 
-from activitygen.anagrams import Difficulty
+from .commons import Difficulty
 
 
 class Board:

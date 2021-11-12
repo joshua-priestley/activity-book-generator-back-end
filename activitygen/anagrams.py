@@ -1,37 +1,12 @@
 import re
-from enum import Enum
 from flask import Blueprint, render_template, request
-from functools import total_ordering
 from random import getrandbits, Random
 from typing import Dict, List
 
+from .commons import Difficulty
 from .themes import pick_words
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")
-
-@total_ordering
-class Difficulty(Enum):
-  EASY = 0
-  MEDIUM = 1
-  HARD = 2
-
-  def __lt__(self, other):
-    return self.value < other.value
-
-  @staticmethod
-  def from_str(s, default):
-    # Try initialising from name string (e.g. "hard", "HARD")
-    try:
-      return Difficulty[s.upper()]
-    except (AttributeError, KeyError):
-      pass
-    # Otherwise try initialising from integer string (e.g. "2")
-    try:
-      return Difficulty(int(s))
-    except:
-      # Otherwise return default
-      return default
-
 
 bp = Blueprint("anagrams", __name__, url_prefix="/activities/anagrams")
 

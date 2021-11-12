@@ -1,8 +1,8 @@
-from .anagrams import Difficulty
 from flask import Blueprint, render_template, request
 from random import Random
 from typing import Dict, List
 
+from .commons import Difficulty
 from .themes import pick_words
 
 # (min, max) proportion of letters to blank out, based on difficulty
@@ -51,7 +51,6 @@ def blank_word(word: str, difficulty: Difficulty, seed=None) -> str:
   min_prop_to_blank, max_prop_to_blank = letters_to_blank[difficulty]
   min_to_blank = max(round(min_prop_to_blank * len(word)), 1)
   max_to_blank = max(min(round(max_prop_to_blank * len(word)), len(word) - 1), min_to_blank)
-  print(f"{word}: ({min_to_blank}, {max_to_blank})")
   to_blank = rng.randint(min_to_blank, max_to_blank)
   indices_to_blank = rng.sample(letter_indices, to_blank)
 
