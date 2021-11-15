@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request
 from random import getrandbits, Random
 from typing import Dict, List
 
-from .commons import Difficulty
+from .commons.difficulty import Difficulty
 from .themes import pick_words
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")

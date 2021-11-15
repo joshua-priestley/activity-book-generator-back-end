@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from random import Random
 from typing import Dict, List
 
-from .commons import Difficulty
+from .commons.difficulty import Difficulty
 from .themes import pick_words
 
 # (min, max) proportion of letters to blank out, based on difficulty

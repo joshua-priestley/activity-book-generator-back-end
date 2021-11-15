@@ -2,7 +2,7 @@ import random
 import numpy as np
 from flask import Blueprint, request
 
-from .commons import Difficulty
+from .commons.difficulty import Difficulty
 
 
 class Board:
