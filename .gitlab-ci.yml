@@ -13,7 +13,6 @@ test:
     - name: bitnami/mongodb:5.0
       alias: mongo
   script:
-    - cp ${FIREBASE_ADMINSDK_KEY} keys/themed-activity-book-firebase-adminsdk.json
     - pip install -r requirements.txt
     - python -m coverage run -m pytest
     - python -m pytest -v
