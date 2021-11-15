@@ -7,3 +7,5 @@ flask-cors
 numpy
 pymongo
 firebase-admin
+httpx
+Authlib
