@@ -192,5 +192,7 @@ def process(data, activity):
 # TODO remove
 @bp.route("/test-icons/<term>")
 def test_test(term: str):
-  from .commons.noun_project_adapter import get_icons
-  return get_icons(term, 1, request.args.get("limit", 2))
+  # from .commons.noun_project_adapter import get_icons
+  # return get_icons(term, 1, request.args.get("limit", 2))
+  from .commons.icons import get_icon_pngs
+  return jsonify([str(bs) for bs in get_icon_pngs(term)])
