@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from PIL import Image
+import random
 
 
 def image_shuffler(original_img_path, num_tiles):
@@ -21,9 +22,9 @@ def image_shuffler(original_img_path, num_tiles):
             num_w_t = 1
             num_h_t = 2
 
-        tile_list = split_into_tiles(width, height, num_w_t, num_h_t, original_img)
+        tile_list, area_list = split_into_tiles(width, height, num_w_t, num_h_t, original_img)
 
-        shuffled_image = concatenate_tiles(tile_list)
+        shuffled_image = concatenate_tiles(tile_list, width, height, area_list)
 
     shuffled_image.save(original_img_path[0:-4] + "_shuffled.jpg")
 
@@ -42,15 +43,30 @@ def split_into_tiles(width, height, num_w_t, num_h_t, original_img):
     for i, area in enumerate(area_list):
         tile_list.append(original_img.crop(area))
 
-    return tile_list
+    return tile_list, area_list
 
 
-def concatenate_tiles(tile_list, width, height):
-    if width >= height:
-        dst = Image.new('RGB', (tile_list[0].width + tile_list[1].width, tile_list[0].height))
-        dst.paste(tile_list[1], (0, 0))
-        dst.paste(tile_list[0], (tile_list[1].width, 0))
-    return dst
+def concatenate_tiles(tile_list, width, height, area_list):
+    # Create a new image with original size
+    shuffled_image = Image.new('RGB', (width, height))
+
+    # Shuffle the tile list making sure no tile is in same position as previously
+    randomized_list = tile_list[:]
+    shuffled = False
+    while not shuffled:
+        random.shuffle(randomized_list)
+        for a, b in zip(tile_list, randomized_list):
+            if a == b:
+                break
+        else:
+            shuffled = True
+    tile_list = randomized_list
+
+    # Paste in shuffled tiles in the new image
+    for i, area in enumerate(area_list):
+        shuffled_image.paste(tile_list[i], (int(area[0]), int(area[1])))
+
+    return shuffled_image
 
 
 if __name__ == "__main__":
