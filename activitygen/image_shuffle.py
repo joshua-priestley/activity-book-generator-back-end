@@ -15,8 +15,8 @@ def image_shuffler(original_img_path, num_tiles):
 
     width, height = original_img.size
 
-    num_w_tiles = 1
-    num_h_tiles = 1
+    grid_shuffled = [1]
+    grid_solution = [1]
 
     # If number of tiles is greater than 1, splits into tiles and concatenates shuffles tiles into another image
     if num_tiles > 1:
@@ -27,7 +27,7 @@ def image_shuffler(original_img_path, num_tiles):
         tile_list, area_list = split_into_tiles(width, height, num_w_tiles, num_h_tiles, original_img)
 
         # Shuffles tiles and combines them into one image
-        shuffled_image = concatenate_tiles(tile_list, width, height, area_list)
+        shuffled_image, grid_shuffled, grid_solution = concatenate_tiles(tile_list, width, height, area_list, num_w_tiles, num_h_tiles)
 
     # If number of tiles is 1 or less, then return original image
     else:
@@ -38,7 +38,7 @@ def image_shuffler(original_img_path, num_tiles):
     # Save shuffled image
     shuffled_image.save(shuffled_image_path)
 
-    return shuffled_image_path, num_w_tiles, num_h_tiles
+    return shuffled_image_path, grid_shuffled, grid_solution
 
 
 def calc_num_splits_on_each_side(width, height, num_tiles):
@@ -90,31 +90,55 @@ def split_into_tiles(width, height, num_w_t, num_h_t, original_img):
     return tile_list, area_list
 
 
-def concatenate_tiles(tile_list, width, height, area_list):
-    # Create a new image with original size
+def concatenate_tiles(tiles_list, width, height, area_list, num_w_tiles, num_h_tiles):
+    # Create a new image with same width and height as original
     shuffled_image = Image.new('RGB', (width, height))
 
-    # Shuffle the tile list making sure no tile is in same position as previously
-    randomized_list = tile_list[:]
-    shuffled = False
-    while not shuffled:
-        random.shuffle(randomized_list)
-        for a, b in zip(tile_list, randomized_list):
-            if a == b:
-                break
-        else:
-            shuffled = True
-    tile_list = randomized_list
+    # Shuffles tiles
+    shuffles_tiles, grid_shuffled, grid_solution = shuffle_tiles_and_return_grids(tiles_list, num_w_tiles, num_h_tiles)
 
     # Paste in shuffled tiles in the new image
     for i, area in enumerate(area_list):
-        shuffled_image.paste(tile_list[i], (int(area[0]), int(area[1])))
+        shuffled_image.paste(shuffles_tiles[i], (int(area[0]), int(area[1])))
 
-    return shuffled_image
+    return shuffled_image, grid_shuffled, grid_solution
+
+
+def shuffle_tiles_and_return_grids(tile_list, num_w_tiles, num_h_tiles):
+
+    tile_nums = range(1, len(tile_list) + 1)
+    shuffled_list = list(zip(tile_list[:], tile_nums))
+    shuffled = False
+    while not shuffled:
+        random.shuffle(shuffled_list)
+        for a, b in zip(tile_list, shuffled_list):
+            if a == b[0]:
+                break
+        else:
+            shuffled = True
+
+    shuffled_list_unzipped = [list(t) for t in zip(*shuffled_list)]
+    shuffled_tiles = shuffled_list_unzipped[0]
+    shuffled_tile_nums = shuffled_list_unzipped[1]
+
+    solution_tile_nums = [0] * len(tile_list)
+    for i, tile_num in enumerate(shuffled_tile_nums):
+        solution_tile_nums[tile_num - 1] = i + 1
+
+    grid_shuffled = [[0] * num_w_tiles for i in range(num_h_tiles)]
+    grid_solution = [[0] * num_w_tiles for i in range(num_h_tiles)]
+    counter = 0
+    for i in range(num_w_tiles):
+        for j in range(num_h_tiles):
+            grid_solution[j][i] = solution_tile_nums[counter]
+            grid_shuffled[j][i] = tile_nums[counter]
+            counter = counter + 1
+
+    return shuffled_tiles, grid_shuffled, grid_solution
 
 
 if __name__ == "__main__":
-    image_shuffler('christmas.jpg', 3)
+    print(image_shuffler('christmas.jpg', 9))
 
 
 bp = Blueprint("image_shuffle", __name__, url_prefix="/activities/image_shuffle")
@@ -129,7 +153,7 @@ def get_state():
     # TODO save image and give path to image shuffler function
     image_path = 'christmas.jpg'
 
-    shuffled_image_path, w_num_tiles, h_num_tiles = image_shuffler(image_path, num_tiles)
+    shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image_path, num_tiles)
 
     return {
         "description": [
@@ -137,9 +161,10 @@ def get_state():
             "write the corresponding tile numbers"
         ],
         # TODO how to pass back image?
-        "tiles": shuffled_image_path,
-        "w_num_tiles": w_num_tiles,
-        "h_num_tiles": h_num_tiles
+        "image_shuffled": shuffled_image_path,
+        "grid_shuffled": grid_shuffled,
+        "image_solution": image.path,
+        "grid_solution": grid_solution
     }
 
     # TODO delete the image and shuffled image
