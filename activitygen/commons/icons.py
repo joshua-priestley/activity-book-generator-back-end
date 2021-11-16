@@ -1,12 +1,29 @@
 import cairosvg
 import httpx
+import io
+import numpy as np
 from flask import current_app
-from typing import List
+from typing import List, Tuple
+from PIL import Image, ImageFilter
 
 from .noun_project_adapter import get_icons
 
 REDIS_KEY_PREFIX = "noun.project.icons"
 DEFAULT_ICON_WIDTH, DEFAULT_ICON_HEIGHT = 512, 512
+
+def silhouette_pixel_art(image_bytes: bytes, dimensions: Tuple[int, int]):
+  with Image.open(io.BytesIO(image_bytes)) as image:
+    # Edge enhance
+    edge_enhanced = image.filter(ImageFilter.EDGE_ENHANCE_MORE)
+
+    # Make black & white
+    silhouette = Image.new("RGBA", edge_enhanced.size, "WHITE")
+    silhouette.paste(edge_enhanced, (0, 0), edge_enhanced)
+    silhouette = silhouette.convert("1")
+
+    # Resize, pixelate
+    silhouette.thumbnail(dimensions)
+    return np.asarray(silhouette)
 
 def get_icon_pngs(term: str) -> List[bytes]:
   term = term.lower()

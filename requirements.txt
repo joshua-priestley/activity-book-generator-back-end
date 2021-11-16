@@ -9,3 +9,4 @@ pymongo
 httpx
 Authlib
 cairosvg
+Pillow
