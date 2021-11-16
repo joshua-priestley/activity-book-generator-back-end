@@ -27,6 +27,13 @@ flask run
 ```
 This runs the server on http://localhost:5000.
 
+## Environment Variables
+
+The following environment variables should be set when developing locally:
+
+`NOUN_PROJECT_API_KEY`: The Noun Project API key, used as the client ID for OAuth 1.0a authentication.
+`NOUN_PROJECT_API_SECRET`: The Noun Project API secret, used as the client secret for OAuth 1.0a authentication.
+
 ## Testing
 
 Run tests using `pytest`. Add `-v` for more details.
