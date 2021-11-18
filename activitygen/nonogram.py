@@ -12,7 +12,7 @@ def get_state():
   """Returns internal nonogram state from provided options"""
   theme = request.args.get("theme")
   width = int(request.args.get("width", 15))
-  height = int(request.args.get("height", 15))
+  height = int(request.args.get("height", width))
 
   images = get_icon_pngs(theme)
   if not images:
