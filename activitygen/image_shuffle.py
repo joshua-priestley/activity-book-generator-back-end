@@ -4,10 +4,10 @@ import random
 import math
 
 
-def image_shuffler(original_img_path, num_tiles):
+def image_shuffler(image_file, num_tiles):
     # Opens image from given file path
     try:
-        original_img = Image.open(original_img_path)
+        original_img = Image.open(image_file)
     except IOError:
         print("No image found at filepath")
         original_img = Image.open('christmas.jpg')
@@ -33,12 +33,12 @@ def image_shuffler(original_img_path, num_tiles):
     else:
         shuffled_image = original_img
 
-    shuffled_image_path = original_img_path[0:-4] + "_shuffled.jpg"
+    # shuffled_image_path = image_file[0:-4] + "_shuffled.jpg"
 
     # Save shuffled image
-    shuffled_image.save(shuffled_image_path)
+    # shuffled_image.save(shuffled_image_path)
 
-    return shuffled_image_path, grid_shuffled, grid_solution
+    return shuffled_image, grid_shuffled, grid_solution
 
 
 def calc_num_splits_on_each_side(width, height, num_tiles):
@@ -149,13 +149,15 @@ bp = Blueprint("image_shuffle", __name__, url_prefix="/activities/image_shuffle"
 @bp.route("/state", methods=('GET', 'POST'))
 def get_state():
     """Returns image tiles from from provided options"""
-    image = request.form.get('image', "")
-    num_tiles = request.form.get("num_tiles", 9)
+    image = request.files['image']
+    num_tiles = request.form.get("tile_num")
 
-    # shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, num_tiles)
+    shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
 
     return {
-        "test": 9,
+        "test": num_tiles,
+        "name": image.name,
+        "grid": grid_shuffled
         # TODO how to pass back image?
         # "image_shuffled": shuffled_image_path,
         # "grid_shuffled": grid_shuffled,
