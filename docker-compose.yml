@@ -11,6 +11,8 @@ services:
       - NOUN_PROJECT_API_SECRET=${NOUN_PROJECT_API_SECRET}
     ports:
       - ${APP_PORT:-8080}:5000
+    volumes:
+      - ${MODELS_DIR:-.}:/root/gensim-data
     # volumes:
     #   - ${FIREBASE_ADMINSDK_KEY}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
   redis:

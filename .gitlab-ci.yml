@@ -1,21 +1,20 @@
 stages: 
-  - test 
   - deploy
 
-test:
-  tags:
-    - docker
-  image: python:bullseye
-  stage: test
-  services:
-    - name: redis:6-alpine
-      alias: redis
-    - name: bitnami/mongodb:5.0
-      alias: mongo
-  script:
-    - pip install -r requirements.txt
-    - python -m coverage run -m pytest
-    - python -m pytest -v
+#test:
+#  tags:
+#    - docker
+#  image: python:bullseye
+#  stage: test
+#  services:
+#    - name: redis:6-alpine
+#      alias: redis
+#    - nam       e: bitnami/mongodb:5.0
+#      alias: mongo
+#  script:
+#    - pip install -r requirements.txt
+#    - python -m coverage run -m pytest
+#    - python -m pytest -v
 
 deploy_dev:
   tags:
@@ -24,6 +23,7 @@ deploy_dev:
   only:
     - dev
   script:
+    - export MODELS_DIR=/home/gitlab-runner/gensim-data
     - export APP_PORT=8080
     - export FRONT_END_URL="http://cloud-vm-43-101.doc.ic.ac.uk"
     - docker-compose -p dev_backend down --rmi local
@@ -36,6 +36,7 @@ deploy_prod:
   only:
     - master
   script:
+    - export MODELS_DIR=/home/gitlab-runner/gensim-data
     - export APP_PORT=8080
     - export FRONT_END_URL="http://cloud-vm-43-100.doc.ic.ac.uk"
     - docker-compose -p prod_backend down --rmi local
