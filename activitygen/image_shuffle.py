@@ -138,33 +138,29 @@ def shuffle_tiles_and_return_grids(tile_list, num_w_tiles, num_h_tiles):
 
 
 if __name__ == "__main__":
-    print(image_shuffler('christmas.jpg', 9))
+    shuffled_tiles, grid_shuffled, grid_solution = image_shuffler('christmas.jpg', 9)
+    print("Grid Shuffled", grid_shuffled)
+    print("Grid Solution", grid_solution)
 
 
 bp = Blueprint("image_shuffle", __name__, url_prefix="/activities/image_shuffle")
 
 
-@bp.route("/state")
+@bp.route("/state", methods=('GET', 'POST'))
 def get_state():
     """Returns image tiles from from provided options"""
-    image = request.files.get('image_file', 'christmas.jpg')
-    num_tiles = request.args.get("num_tiles", 9)
+    image = request.form.get('image', "")
+    num_tiles = request.form.get("num_tiles", 9)
 
-    # TODO save image and give path to image shuffler function
-    image_path = 'christmas.jpg'
-
-    shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image_path, num_tiles)
+    # shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, num_tiles)
 
     return {
-        "description": [
-            f"Recreate the original image by shuffling the tiles and draw the original image in the empty box or"
-            "write the corresponding tile numbers"
-        ],
+        "test": 9,
         # TODO how to pass back image?
-        "image_shuffled": shuffled_image_path,
-        "grid_shuffled": grid_shuffled,
-        "image_solution": image.path,
-        "grid_solution": grid_solution
+        # "image_shuffled": shuffled_image_path,
+        # "grid_shuffled": grid_shuffled,
+        # "image_solution": image.path,
+        # "grid_solution": grid_solution
     }
 
     # TODO delete the image and shuffled image
