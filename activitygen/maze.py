@@ -1,4 +1,6 @@
+from os import unsetenv
 import random
+from re import S
 
 from flask.templating import render_template
 from flask import Blueprint, Markup, request
@@ -12,6 +14,7 @@ class Cell:
 
         self.x, self.y = x, y
         self.walls = {'N': True, 'S': True, 'E': True, 'W': True}
+        self.traversed = False
 
     def has_all_walls(self):
         # Check if cell has all of its walls
@@ -35,9 +38,38 @@ class Maze:
 
         """
 
-        self.nx, self.ny = nx, ny
+        shaped_map = [
+        [1,1,1,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,1,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,0,0,1,0,0,0],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0]
+        ]
+
+        self.nx, self.ny = len(shaped_map), len(shaped_map[0])
+        #self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
+        self.end_x, self.end_y = 0,0
         self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
+        
+       
+        for x in range(self.nx):
+            for y in range(self.ny):
+                # Sets cell to be out of bounds if not part of the shaped map
+                inBounds = shaped_map[x][y] == 1
+                self.maze_map[y][x].inBounds =  inBounds
+                if inBounds:
+                    self.ix, self.iy = x, y
 
     def cell_at(self, x, y):
         """Return the Cell object at (x,y)."""
@@ -68,6 +100,7 @@ class Maze:
     def generate_svg(self) -> str:
         """Generate a svg of the maze"""
 
+        solution_path = self.solve_maze()
         aspect_ratio = self.nx / self.ny
         # Pad the maze all around by this amount.
         padding = 10
@@ -78,12 +111,7 @@ class Maze:
         scy, scx = height / self.ny, width / self.nx
 
         svg = ""
-        
-        def write_wall(svg, ww_x1, ww_y1, ww_x2, ww_y2):
-            """Write a single wall to the SVG."""
-
-            svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(ww_x1, ww_y1, ww_x2, ww_y2)
-
+    
        
         # SVG preamble and styles.
         # svg +='<?xml version="1.0" encoding="utf-8"?>'
@@ -96,32 +124,53 @@ class Maze:
         svg +=('line {')
         svg +=('    stroke: #000000;\n    stroke-linecap: square;')
         svg +=('    stroke-width: 5;\n}')
+
+        svg +=('line.sol {')
+        svg +=('    stroke: #FF0000;\n    stroke-linecap: square;')
+        svg +=('    stroke-width: 5;\n}')
+
         svg +=(']]></style>\n</defs>')
         # Draw the "South" and "East" walls of each cell, if present (these
         # are the "North" and "West" walls of a neighbouring cell in
         # general).
         for x in range(self.nx):
             for y in range(self.ny):
-                if self.cell_at(x, y).walls['S']:
-                    x1, y1, x2, y2 = x * scx, (y + 1) * scy, (x + 1) * scx, (y + 1) * scy
-                    
-                    # Write a wall to svg 
-                    svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
-                if self.cell_at(x, y).walls['E']:
-                    x1, y1, x2, y2 = (x + 1) * scx, y * scy, (x + 1) * scx, (y + 1) * scy
-                    # Write a wall to svg
-                    svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+                if (self.cell_at(x,y).inBounds):
+                    if self.cell_at(x, y).walls['S']:
+                        x1, y1, x2, y2 = x * scx, (y + 1) * scy, (x + 1) * scx, (y + 1) * scy
+                        
+                        # Write a wall to svg 
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+                    if self.cell_at(x, y).walls['E']:
+                        x1, y1, x2, y2 = (x + 1) * scx, y * scy, (x + 1) * scx, (y + 1) * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
 
-        # Draw the North and West maze border
-        svg +=('<line x1="0" y1="0" x2="{}" y2="0"/>'.format(width))
-        svg +=('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height))
+                    if self.cell_at(x, y).walls['N']:
+                        x1, y1, x2, y2 = x * scx, y * scy, (x + 1) * scx, y * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)  
+
+                    if self.cell_at(x, y).walls['W']:
+                        x1, y1, x2, y2 = x * scx, y * scy, x * scx, (y + 1) * scy
+                        # Write a wall to svg
+                        svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)        
+
+
+        # Draw solution
+        for i in range(len(solution_path) - 1):
+           
+            x_cell_1, y_cell_1 = solution_path[i].x, solution_path[i].y
+            x_cell_2, y_cell_2 = solution_path[i + 1].x, solution_path[i + 1].y
+
+            x1, y1, x2, y2 = (x_cell_1 + 0.5) * scx, (y_cell_1 + 0.5) * scy, (x_cell_2 + 0.5) * scx, (y_cell_2 + 0.5) * scy
+            svg += '<line class="sol" x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+
         svg +=('</svg>')
 
         return svg
 
-    def find_valid_neighbours(self, cell):
-        """ Return an array of unvisited neighbours to cell """
-
+    def find_neighbours(self, cell):
         delta = [('W', (-1, 0)),
                  ('E', (1, 0)),
                  ('S', (0, 1)),
@@ -129,35 +178,86 @@ class Maze:
         neighbours = []
         for direction, (dx, dy) in delta:
             x2, y2 = cell.x + dx, cell.y + dy
-            if (0 <= x2 < self.nx) and (0 <= y2 < self.ny):
+            if (0 <= x2 < self.nx) and (0 <= y2 < self.ny) and (self.cell_at(x2, y2).inBounds):
+                #print(f"Neighbour {x2}, {y2}")
                 neighbour = self.cell_at(x2, y2)
-                if neighbour.has_all_walls():
-                    neighbours.append((direction, neighbour))
+                neighbours.append((direction, neighbour))
         return neighbours
+
+    def find_valid_neighbours(self, cell):
+        """ Return an array of unvisited neighbours to cell """
+
+        valid_neighbours = [(direction, c) for (direction, c) in self.find_neighbours(cell) if c.has_all_walls()]
+        
+        return valid_neighbours
+
+    def find_traversable_neighbours(self, cell):
+        """ Returns neighbours that could be part of a solution path"""
+        # delta = [('W', (-1, 0)),
+        #          ('E', (1, 0)),
+        #          ('S', (0, 1)),
+        #          ('N', (0, -1))]
+        # neighbours = []
+        # for direction, (dx, dy) in delta:
+        #     x2, y2 = cell.x + dx, cell.y + dy
+        #     if (0 <= x2 < self.nx) and (0 <= y2 < self.ny) and (self.cell_at(x2, y2).inBounds):
+        #         #print(f"Neighbour {x2}, {y2}")
+        #         neighbour = self.cell_at(x2, y2)
+        #         if (not neighbour.walls[direction])
+        #         neighbours.append((direction, neighbour))
+        neighbours = self.find_neighbours(cell)
+        return [neighbouring_Cell for (direction, neighbouring_Cell) in neighbours if ((not cell.walls[direction]) and (not neighbouring_Cell.traversed))]
 
     def make_maze(self):
         # Total number of cells.
         n = self.nx * self.ny
         cell_stack = []
         current_cell = self.cell_at(self.ix, self.iy)
+
+        
         # Total number of visited cells during maze construction.
         nv = 1
 
         while nv < n:
-            neighbours = self.find_valid_neighbours(current_cell)
+            #print(current_cell.x, current_cell.y)
+            if (current_cell.inBounds):
+            
+                neighbours = self.find_valid_neighbours(current_cell)
 
-            if not neighbours:
-                # We've reached a dead end: backtrack.
-                current_cell = cell_stack.pop()
-                continue
+                if not neighbours:
+                    # We've reached a dead end: backtrack.
+                    if cell_stack:
+                        current_cell = cell_stack.pop() 
+                    else:
+                        break
+                    continue
 
-            # Choose a random neighbouring cell and move to it.
-            direction, next_cell = random.choice(neighbours)
-            current_cell.remove_wall(next_cell, direction)
-            cell_stack.append(current_cell)
-            current_cell = next_cell
+                # Choose a random neighbouring cell and move to it.
+                direction, next_cell = random.choice(neighbours)
+                current_cell.remove_wall(next_cell, direction)
+                cell_stack.append(current_cell)
+                current_cell = next_cell
             nv += 1
 
+
+    def solve_maze(self):
+        path = [self.cell_at(self.ix, self.iy)]
+
+        while(True):
+            current_cell = path[-1]
+            current_cell.traversed = True
+            # Break if found the last cell
+            if (current_cell.x == self.end_x and current_cell.y == self.end_y):
+                break
+
+            #unvisited = [cell for cell in self.find_traversable_neighbours(current_cell) if not cell.traversed] 
+            unvisited = self.find_traversable_neighbours(current_cell)
+            if (unvisited):
+                path.append(unvisited[0])
+            else:
+                path.pop()
+
+        return path
 
 bp = Blueprint("maze", __name__, url_prefix="/activities/maze")
 
@@ -182,3 +282,11 @@ def generate_html(svg, html_data):
     print(html_data)
     print(svg)
     return render_template("maze.html", title=html_data["title"], instructions=html_data["instructions"], svg=Markup(svg))
+
+
+
+if __name__ == '__main__':
+    generate_maze(15,15)
+
+    #print()
+    
