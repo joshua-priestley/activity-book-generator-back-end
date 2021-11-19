@@ -26,7 +26,7 @@ def create_app(test_config=None):
   CORS(app, origins = origins, supports_credentials=True)
 
   # Register blueprints
-  from . import root, anagrams, fill_in_the_blanks, maze, nonogram, sudoku, word_search, login, books
+  from . import root, anagrams, fill_in_the_blanks, maze, sudoku, word_search, login, books, image_shuffle, nonogram
   app.register_blueprint(root.bp)
   app.register_blueprint(anagrams.bp)
   app.register_blueprint(fill_in_the_blanks.bp)
@@ -36,5 +36,6 @@ def create_app(test_config=None):
   app.register_blueprint(word_search.bp)
   app.register_blueprint(login.bp)
   app.register_blueprint(books.bp)
+  app.register_blueprint(image_shuffle.bp)
 
   return app
