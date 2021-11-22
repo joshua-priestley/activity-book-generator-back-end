@@ -16,3 +16,5 @@ htmlcov/
 tags
 tags.lock
 tags.temp
+
+gensim-data/
