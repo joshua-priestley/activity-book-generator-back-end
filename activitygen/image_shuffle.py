@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, send_file
 from PIL import Image
 import random
 import math
+from tempfile import TemporaryFile
 
 
 def image_shuffler(image_file, num_tiles):
@@ -152,17 +153,19 @@ def get_state():
     image = request.files['image']
     num_tiles = request.form.get("tile_num")
 
-    shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
+    shuffled_image, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
 
-    return {
-        "test": num_tiles,
-        "name": image.name,
-        "grid": grid_shuffled
-        # TODO how to pass back image?
-        # "image_shuffled": shuffled_image_path,
-        # "grid_shuffled": grid_shuffled,
-        # "image_solution": image.path,
-        # "grid_solution": grid_solution
-    }
+    fp = TemporaryFile()
+    shuffled_image.save(fp, "PNG")
+    fp.seek(0)
+
+    # return {
+    #     "image_shuffled": fp.toJson,
+    #     "grid_shuffled": grid_shuffled,
+    #     "image_solution": image,
+    #     "grid_solution": grid_solution
+    # }
+
+    return send_file(fp, download_name="christmas")
 
     # TODO delete the image and shuffled image
