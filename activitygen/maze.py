@@ -1,9 +1,13 @@
-from os import unsetenv
+from os import supports_bytes_environ, unsetenv
 import random
 from re import S
-
+import re
+import sys
 from flask.templating import render_template
-from flask import Blueprint, Markup, request
+from flask import abort, Blueprint, Markup, request
+
+from .commons.icons import get_icon_pngs, silhouette_pixel_art
+
 class Cell:
     
     # A wall separates a pair of cells in the N-S or W-E directions.
@@ -31,44 +35,82 @@ class Cell:
 class Maze:
     """A Maze, represented as a grid of cells."""
 
-    def __init__(self, nx, ny, ix=0, iy=0):
+    def __init__(self, nx, ny, image, ix=0, iy=0):
         """Initialize the maze grid.
         The maze consists of nx * ny cells and will be constructed starting
         at the cell indexed at (ix, iy).
 
         """
 
-        shaped_map = [
-        [1,1,1,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
-        [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,1,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,0,0,1,0,0,0],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
-        [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0]
-        ]
+        # shaped_map = [
+        # [1,1,1,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,1,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,0,0,1,0,0,0],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0]
+        # ]
+
+        shaped_map = [[ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True, False,  True,  True,  True,  True,  True,  True,  True, False,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True, False, False, False,  True, False,  True, False, False, False,
+                True,  True,  True,],
+            [ True,  True,  True, False, False,  True,  True, False,  True,  True, False, False,
+                True,  True,  True,],
+            [ True, False, False, False,  True, False,  True,  True,  True, False,  True, False,
+            False, False,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True, False,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True,],
+            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
+                True,  True,  True]]
+
+
+        print(image.tolist(), file=sys.stderr)
+        print(shaped_map, file=sys.stderr)
+        shaped_map = image.tolist()
 
         self.nx, self.ny = len(shaped_map), len(shaped_map[0])
         #self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
-        self.end_x, self.end_y = 0,0
+        self.end_x, self.end_y = -1,-1
         self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
         
        
         for x in range(self.nx):
             for y in range(self.ny):
                 # Sets cell to be out of bounds if not part of the shaped map
-                inBounds = shaped_map[x][y] == 1
-                self.maze_map[y][x].inBounds =  inBounds
+                inBounds = not shaped_map[x][y]
+                self.maze_map[y][x].inBounds = inBounds
                 if inBounds:
+                    if(self.end_x == -1):
+                        self.end_x, self.end_y = x,y
                     self.ix, self.iy = x, y
 
     def cell_at(self, x, y):
@@ -157,18 +199,20 @@ class Maze:
                         svg += '<line x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)        
 
 
-        # Draw solution
+        sol = svg    
+        #Draw solution
         for i in range(len(solution_path) - 1):
            
             x_cell_1, y_cell_1 = solution_path[i].x, solution_path[i].y
             x_cell_2, y_cell_2 = solution_path[i + 1].x, solution_path[i + 1].y
 
             x1, y1, x2, y2 = (x_cell_1 + 0.5) * scx, (y_cell_1 + 0.5) * scy, (x_cell_2 + 0.5) * scx, (y_cell_2 + 0.5) * scy
-            svg += '<line class="sol" x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
+            sol += '<line class="sol" x1="{}" y1="{}" x2="{}" y2="{}"/>'.format(x1, y1, x2, y2)
 
         svg +=('</svg>')
-
-        return svg
+        sol +=('</svg>')
+        print()
+        return [sol, sol]
 
     def find_neighbours(self, cell):
         delta = [('W', (-1, 0)),
@@ -266,17 +310,38 @@ def get_state():
   """Returns internal maze state from provided options"""
   grid_width = int(request.args.get("width", 15))
   grid_height = int(request.args.get("height", 15))
-
+  theme = request.args.get("theme")
+  maze_svgs = generate_maze(grid_width, grid_height)
+  #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
   return {
     "description": ["Complete the maze."],
-    "svg": generate_maze(grid_width, grid_height)
+    "svg": maze_svgs[0],
+    "sol": maze_svgs[1]
   }
+
+def generate_shaped_maze(grid_width, grid_height, theme):
+    """Returns internal nonogram state from provided options"""
+    
+    # grid_width = int(request.args.get("width", 15))
+    # grid_height = int(request.args.get("height", 15))
+    #theme = request.args.get("theme")
+
+    images = get_icon_pngs(theme)
+    if not images:
+        abort(404, f"No suitable images found for theme '{theme}'")
+    image_bytes = random.choice(images)
+    image = silhouette_pixel_art(image_bytes, (grid_width, grid_height))
+
+    maze = Maze(grid_width, grid_height, image, 0, 0)
+    maze.make_maze()
+    res = maze.generate_svg()
+    return res
 
 def generate_maze(grid_width, grid_height):
     maze = Maze(grid_width, grid_height, 0, 0)
     maze.make_maze()
-    svg = maze.generate_svg()
-    return svg
+    res = maze.generate_svg()
+    return res
 
 def generate_html(svg, html_data):
     print(html_data)
@@ -286,7 +351,8 @@ def generate_html(svg, html_data):
 
 
 if __name__ == '__main__':
-    generate_maze(15,15)
+    res = generate_maze(15,15)
+    print(res[0])
 
     #print()
     
