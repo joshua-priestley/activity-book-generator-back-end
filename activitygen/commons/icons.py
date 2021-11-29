@@ -21,6 +21,24 @@ def silhouette_pixel_art(image_bytes: bytes, dimensions: Tuple[int, int]):
     silhouette.paste(edge_enhanced, (0, 0), edge_enhanced)
     silhouette = silhouette.convert("1")
 
+    # Trim surrounding whitespace
+    silhouette_arr = np.asarray(silhouette)
+    min_row = 0
+    while np.all(silhouette_arr[min_row]):
+      min_row += 1
+    min_col = 0
+    while np.all(silhouette_arr[:, min_col]):
+      min_col += 1
+    max_row = silhouette_arr.shape[0] - 1
+    while np.all(silhouette_arr[max_row]):
+      max_row -= 1
+    max_col = silhouette_arr.shape[1] - 1
+    while np.all(silhouette_arr[:, max_col]):
+      max_col -= 1
+    start = min(min_row, min_col)
+    end = max(max_row, max_col)
+    silhouette = silhouette.crop((start, start, end, end))
+
     # Resize, pixelate
     silhouette.thumbnail(dimensions)
     return np.asarray(silhouette)
