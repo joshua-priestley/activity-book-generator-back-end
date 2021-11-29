@@ -27,6 +27,10 @@ def generate_nonogram(image) -> Dict:
     for span in img]
     for img in (image, image.T))
 
+  # Replace empty numbers lists with single 0
+  row_numbers, column_numbers = ([groups if groups else [0] for groups in numbers]
+    for numbers in (row_numbers, column_numbers))
+
   return {
     "image": image.tolist(),
     "row_numbers": row_numbers,
