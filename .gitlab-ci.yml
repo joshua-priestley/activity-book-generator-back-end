@@ -25,7 +25,7 @@ deploy_dev:
   script:
     - export MODELS_DIR=/home/gitlab-runner/gensim-data
     - export APP_PORT=8080
-    - export FRONT_END_URL="http://cloud-vm-43-101.doc.ic.ac.uk"
+    - export FRONT_END_URL="http://cloud-vm-43-07.doc.ic.ac.uk"
     - docker-compose -p dev_backend down --rmi local
     - docker-compose -p dev_backend up --build -d
 
@@ -38,6 +38,6 @@ deploy_prod:
   script:
     - export MODELS_DIR=/home/gitlab-runner/gensim-data
     - export APP_PORT=8080
-    - export FRONT_END_URL="http://cloud-vm-43-100.doc.ic.ac.uk"
+    - export FRONT_END_URL="http://cloud-vm-43-07.doc.ic.ac.uk"
     - docker-compose -p prod_backend down --rmi local
     - docker-compose -p prod_backend up --build -d
