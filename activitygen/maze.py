@@ -60,41 +60,41 @@ class Maze:
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0]
         # ]
 
-        shaped_map = [[ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True, False,  True,  True,  True,  True,  True,  True,  True, False,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True, False, False, False,  True, False,  True, False, False, False,
-                True,  True,  True,],
-            [ True,  True,  True, False, False,  True,  True, False,  True,  True, False, False,
-                True,  True,  True,],
-            [ True, False, False, False,  True, False,  True,  True,  True, False,  True, False,
-            False, False,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True, False,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True,],
-            [ True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,  True,
-                True,  True,  True]]
+        shaped_map = [[ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False, True,  False,  False,  False,  False,  False,  False,  False, True,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False, True, True, True,  False, True,  False, True, True, True,
+                False,  False,  False],
+            [ False,  False,  False, True, True,  False,  False, True,  False,  False, True, True,
+                False,  False,  False],
+            [ False, True, True, True,  False, True,  False,  False,  False, True,  False, True,
+            True, True,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False, True,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False],
+            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
+                False,  False,  False]]
 
 
-        print(image.tolist(), file=sys.stderr)
-        print(shaped_map, file=sys.stderr)
-        shaped_map = image.tolist()
+        # print(image.tolist(), file=sys.stderr)
+        # print(shaped_map, file=sys.stderr)
+        #shaped_map = image.tolist()
 
         self.nx, self.ny = len(shaped_map), len(shaped_map[0])
         #self.nx, self.ny = nx, ny
@@ -211,8 +211,7 @@ class Maze:
 
         svg +=('</svg>')
         sol +=('</svg>')
-        print()
-        return [sol, sol]
+        return [svg, sol]
 
     def find_neighbours(self, cell):
         delta = [('W', (-1, 0)),
