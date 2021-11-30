@@ -10,5 +10,4 @@ httpx
 Authlib
 cairosvg
 Pillow
-nltk
-gensim
+requests
