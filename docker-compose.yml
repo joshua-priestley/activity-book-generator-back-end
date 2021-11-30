@@ -13,8 +13,7 @@ services:
       - ${APP_PORT:-8080}:5000
     volumes:
       - ${MODELS_DIR:-.}:/root/gensim-data
-    # volumes:
-    #   - ${FIREBASE_ADMINSDK_KEY}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
+      - ${FIREBASE_KEY:-./keys/themed-activity-book-firebase-adminsdk.json}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
   redis:
     image: redis:6-alpine
   mongo:
