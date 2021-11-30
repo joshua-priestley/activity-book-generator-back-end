@@ -60,6 +60,7 @@ def try_formats(theme: str, no_results: int):
   formats = [id, lower, title]
 
   for f in formats:
+    print(f(theme))
     res = query_model(f(theme), no_results)
     if res != []:
       break
@@ -90,8 +91,12 @@ def pick_words(theme: str, count: int, allow_multiword=True, already_used=[]) ->
 
   word_bank = list(filter(lambda w: w not in already_used, word_bank))
 
-  words = random.sample(word_bank, count)
-  return words
+  if count <= len(word_bank):
+    words = random.sample(word_bank, count)
+    return words
+  else:
+    print("Sorry, we could not find enough words for this theme")
+    return []
 
 if __name__ == "__main__":
   while True:
