@@ -3,7 +3,6 @@ services:
   web:
     build: .
     depends_on:
-      - "redis"
       - "mongo"
     environment:
       - FRONT_END_URL
@@ -15,7 +14,5 @@ services:
     volumes:
       - ${MODELS_DIR:-.}:/root/gensim-data
       - ${FIREBASE_KEY:-./keys/themed-activity-book-firebase-adminsdk.json}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
-  redis:
-    image: redis:6-alpine
   mongo:
     image: bitnami/mongodb:5.0

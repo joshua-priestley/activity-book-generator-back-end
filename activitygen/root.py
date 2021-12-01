@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, make_response, request, session
+from flask import Blueprint, jsonify, make_response, request
 import random
 #from werkzeug.wrappers import request
 
@@ -55,19 +55,11 @@ def themesEndpoint():
   if request.method == 'GET':
     result = predefined.copy()
 
-    if "custom themes" in session:
-      result = { **result, **session["custom themes"] }
-
     return jsonify(result)
 
   res = request.json
 
-  if "custom themes" not in session:
-    session["custom themes"] = {}
-
-  session["custom themes"][res["theme"]] = res["words"]
-
-  return jsonify("Added theme")
+  return jsonify("Not supported")
 
 activity_map = {
   'anagrams': anagrams.generate_data,
