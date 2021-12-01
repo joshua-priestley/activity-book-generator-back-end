@@ -1,16 +1,15 @@
-from flask import Blueprint, request, session, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify
 from . import mongo
 from bson.objectid import ObjectId
+from .firebase import check_token
 
 bp = Blueprint("books", __name__)
 
 @bp.route("/books", methods=['GET', 'POST','DELETE', 'PATCH'])
+@check_token
 def books():
-  if 'userId' not in session:
-    data = { 'invalid' : 'not logged in' }
-    return make_response(jsonify(data), 400)
-
-  userId = session['userId']
+  
+  userId = request.userId
 
   if request.method == 'GET':
     user = mongo.users.find_one({ '_id' : ObjectId(userId) })
@@ -57,12 +56,10 @@ def books():
     return make_response(jsonify({'updated book' : book_id}), 200)
 
 @bp.route("/content", methods=["GET", "PATCH"])
+@check_token
 def content():
-  if 'userId' not in session:
-    data = { 'invalid' : 'not logged in' }
-    return make_response(jsonify(data), 400)
 
-  userId = session['userId']
+  userId = request.userId
   book_id = request.args.get('book_id')
 
   if request.method == 'GET':

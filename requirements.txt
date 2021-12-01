@@ -1,8 +1,6 @@
 flask[async]==2.0.2
 pytest==6.2.5
 coverage==6.0.2
-flask-session
-redis
 flask-cors
 numpy
 pymongo
@@ -11,3 +9,4 @@ Authlib
 cairosvg
 Pillow
 requests
+firebase-admin
