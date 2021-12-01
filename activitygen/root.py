@@ -6,7 +6,7 @@ from . import anagrams
 from . import maze
 from . import word_search
 from . import fill_in_the_blanks
-from .themes import themes
+from .themes import predefined
 
 bp = Blueprint("root", __name__)
 
@@ -53,7 +53,7 @@ def puzzles():
 @bp.route("/themes", methods = ['GET', 'POST'])
 def themesEndpoint():
   if request.method == 'GET':
-    result = themes.copy()
+    result = predefined.copy()
 
     return jsonify(result)
 
