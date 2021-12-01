@@ -27,9 +27,12 @@ def get_state():
     extraWords = extraWords.split(",")
     count -= len(extraWords)
 
-  words = pick_words(theme, count, allow_multiword=False) + extraWords
+  words = pick_words(theme, count, allow_multiword=False, already_used=extraWords) + extraWords
 
-  cells, hangman_words, word_positions = generate(words, hidden_message)
+  # Concatenate terms made of multiple words
+  copy_words = list(map(lambda w: w.replace(" ", ""), words))
+
+  cells, hangman_words, word_positions = generate(copy_words, hidden_message)
   description = [
     "Some words have been hidden in this square board. You can find them written in a row, column "
     "or diagonally, from left to right or viceversa.",
