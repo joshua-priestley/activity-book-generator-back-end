@@ -35,7 +35,7 @@ def get_state():
   cells, hangman_words, word_positions = generate(copy_words, hidden_message)
   description = [
     "Some words have been hidden in this square board. You can find them written in a row, column "
-    "or diagonally, from left to right or viceversa.",
+    "or diagonally, from left to right or viceversa. ",
     f"The words you are looking for are: {', '.join(words)}.",
   ]
   if hidden_message:
