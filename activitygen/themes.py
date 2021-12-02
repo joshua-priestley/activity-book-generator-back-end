@@ -24,7 +24,7 @@ def pick_words(theme: str, count=WORDS_TO_SELECT, allow_multiword=True, already_
   
   if theme in predefined:
     word_bank = list(filter(lambda w: w not in already_used, predefined[theme]))
-    return random.sample(word_bank, count)
+    return random.sample(word_bank, min(count, len(word_bank)))
 
   params = { 'theme' : theme, 
              'count' : str(count), 

@@ -2,6 +2,8 @@ from math import sqrt, floor, log2, pow
 from random import shuffle, randint
 import string
 
+import sys
+
 from flask import Blueprint, jsonify, render_template, request
 
 MAX_GRID_LENGTH = 20
@@ -21,19 +23,19 @@ def get_state():
   hidden_message = hidden_message if hidden_message else None
 
   # Get the words to be included in the word search
-  words = request.args.get("words", [])
+  words = request.args.get("words").split(",")
 
   # Assert that the list of words is non empty
   assert(words != [])
 
   # Concatenate terms made of multiple words
-  words = list(map(lambda w: w.replace(" ", ""), words))
+  copy_words = list(map(lambda w: w.replace(" ", ""), words))
 
   # Make sure no word is longer than the maximum size of the square grid
   # TODO: Extend the grid to rectangular shapes
-  assert(list(filter(lambda w: len(w) > MAX_GRID_LENGTH, words)) == [])
+  assert(list(filter(lambda w: len(w) > MAX_GRID_LENGTH, copy_words)) == [])
 
-  cells, hangman_words, word_positions = generate(words, hidden_message)
+  cells, hangman_words, word_positions = generate(copy_words, hidden_message)
   description = [
     "Some words have been hidden in this square board. You can find them written in a row, column "
     "or diagonally, from left to right or viceversa. ",
