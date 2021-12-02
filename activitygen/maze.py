@@ -99,6 +99,7 @@ class Maze:
         self.nx, self.ny = len(shaped_map), len(shaped_map[0])
         #self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
+        self.ix, self.iy = -1,-1
         self.end_x, self.end_y = -1,-1
         self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
         
@@ -109,9 +110,9 @@ class Maze:
                 inBounds = not shaped_map[x][y]
                 self.maze_map[y][x].inBounds = inBounds
                 if inBounds:
-                    if(self.end_x == -1):
-                        self.end_x, self.end_y = x,y
-                    self.ix, self.iy = x, y
+                    if(self.ix == -1):
+                        self.ix, self.iy = x,y
+                    self.end_x, self.end_y = x, y
 
     def cell_at(self, x, y):
         """Return the Cell object at (x,y)."""
@@ -143,6 +144,11 @@ class Maze:
         """Generate a svg of the maze"""
 
         solution_path = self.solve_maze()
+        self.cell_at(self.ix, self.iy).walls['N'] = False
+        self.cell_at(self.end_x, self.end_y).walls['S'] = False
+
+        print(self.cell_at(self.end_x, self.end_y).walls['S'])
+       
         aspect_ratio = self.nx / self.ny
         # Pad the maze all around by this amount.
         padding = 10
@@ -154,7 +160,6 @@ class Maze:
 
         svg = ""
     
-       
         # SVG preamble and styles.
         # svg +='<?xml version="1.0" encoding="utf-8"?>'
         svg +=('<svg xmlns="http://www.w3.org/2000/svg"')
