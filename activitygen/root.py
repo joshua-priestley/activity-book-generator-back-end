@@ -6,7 +6,7 @@ from . import anagrams
 from . import maze
 from . import word_search
 from . import fill_in_the_blanks
-from .themes import predefined
+from .themes import predefined, pick_words
 
 bp = Blueprint("root", __name__)
 
@@ -17,6 +17,11 @@ def root():
 @bp.route("/puzzles")
 def puzzles():
   return jsonify(["Word Search", "Anagrams"])
+
+@bp.route("/words")
+def get_words():
+  theme = request.args.get("theme", "London")
+  return jsonify(pick_words(theme))
 
 #@bp.route("/whoami")
 #@check_token

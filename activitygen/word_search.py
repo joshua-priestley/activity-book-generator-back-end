@@ -4,9 +4,7 @@ import string
 
 from flask import Blueprint, jsonify, render_template, request
 
-from .themes import pick_words
-
-MAX_GRID_LENGTH = 15
+MAX_GRID_LENGTH = 20
 MAX_ATTEMPTS = 100
 
 directions = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
@@ -16,23 +14,26 @@ bp = Blueprint("word-search", __name__, url_prefix="/activities/word-search")
 @bp.route("/state")
 def get_state():
   """Returns internal word search state from provided options"""
-  theme = request.args.get("theme", "christmas")
-  count = int(request.args.get("count", 5))
+
   hidden_message = request.args.get("hidden-message")
+  
   # Ignore hidden message if empty string
   hidden_message = hidden_message if hidden_message else None
-  extraWords = request.args.get("words", [])
 
-  if extraWords != []:
-    extraWords = extraWords.split(",")
-    count -= len(extraWords)
+  # Get the words to be included in the word search
+  words = request.args.get("words", [])
 
-  words = pick_words(theme, count, allow_multiword=False, already_used=extraWords) + extraWords
+  # Assert that the list of words is non empty
+  assert(words != [])
 
   # Concatenate terms made of multiple words
-  copy_words = list(map(lambda w: w.replace(" ", ""), words))
+  words = list(map(lambda w: w.replace(" ", ""), words))
 
-  cells, hangman_words, word_positions = generate(copy_words, hidden_message)
+  # Make sure no word is longer than the maximum size of the square grid
+  # TODO: Extend the grid to rectangular shapes
+  assert(list(filter(lambda w: len(w) > MAX_GRID_LENGTH, words)) == [])
+
+  cells, hangman_words, word_positions = generate(words, hidden_message)
   description = [
     "Some words have been hidden in this square board. You can find them written in a row, column "
     "or diagonally, from left to right or viceversa. ",
