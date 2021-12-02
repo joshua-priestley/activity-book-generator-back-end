@@ -71,7 +71,14 @@ def compute_grid_length(min_length, total):
   return int(sqrt(squares[index + 1]))
 
 def compute_constraints(words, hidden_message):
+
+  assert(words != [])
+
   lengths = list(map(len, words))
+  
+  # There should be no empty words
+  assert(0 not in lengths)
+
   total_cells = sum(lengths)
   
   if hidden_message != None:

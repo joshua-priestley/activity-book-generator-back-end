@@ -4,6 +4,7 @@ services:
     build: .
     depends_on:
       - "mongo"
+      - "redis"
     environment:
       - FRONT_END_URL
       - WORDS_API_URL
@@ -16,3 +17,5 @@ services:
       - ${FIREBASE_KEY:-./keys/themed-activity-book-firebase-adminsdk.json}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
   mongo:
     image: bitnami/mongodb:5.0
+  redis:
+    image: redis:6-alpine

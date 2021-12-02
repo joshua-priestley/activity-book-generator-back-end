@@ -10,3 +10,4 @@ cairosvg
 Pillow
 requests
 firebase-admin
+redis
