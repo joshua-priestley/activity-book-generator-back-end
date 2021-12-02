@@ -17,11 +17,11 @@ bp = Blueprint("fill-in-the-blanks", __name__, url_prefix="/activities/fill-in-t
 @bp.route("/state")
 def get_state():
   """Returns internal fill in the blanks state from provided options"""
+  # TODO: Remove theme from here and pass it around on the frontend. It has no purpose in the backend
   theme = request.args.get("theme", "christmas")
+  
   difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
-  count = int(request.args.get("count", 10))
-
-  words = pick_words(theme, count)
+  words = request.args.get("words").split(",")
 
   return {
     "description": [f"Some letters from the following words are missing! Can you fill in the blanks to complete each {theme} themed word?"],

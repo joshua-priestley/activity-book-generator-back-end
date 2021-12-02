@@ -13,11 +13,11 @@ bp = Blueprint("anagrams", __name__, url_prefix="/activities/anagrams")
 @bp.route("/state")
 def get_state():
   """Returns internal anagrams state from provided options"""
+  # TODO: Remove theme and pass it around on the frontend. It has no purpose on the backend
   theme = request.args.get("theme", "christmas")
+  
   difficulty = Difficulty.from_str(request.args.get("difficulty"), Difficulty.HARD)
-  count = int(request.args.get("count", 10))
-
-  words = pick_words(theme, count)
+  words = request.args.get("words").split(",")
 
   return {
     "description": [f"The following words have been scrambled! Can you rearrange the letters to find each {theme} themed word?"],
@@ -33,7 +33,6 @@ def generate_data(theme: str, words: List[str], difficulty: Difficulty) -> Dict:
   """Generates internal data representation of anagrams with the provided words"""
   return {
     "theme": theme,
-    "words": words,
     "anagrams": generate_anagrams(words, difficulty)
   }
 
