@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import redis
 import os
 
 def create_app(test_config=None):
@@ -10,6 +11,8 @@ def create_app(test_config=None):
   # Use test config if supplied
   if test_config:
     app.config.from_mapping(test_config)
+
+  app.config["REDIS_CONN"] = redis.from_url('redis://redis:6379')
 
   origins = ["http://localhost:3000"]
   if "FRONT_END_URL" in os.environ:

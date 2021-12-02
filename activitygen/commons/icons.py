@@ -45,7 +45,7 @@ def silhouette_pixel_art(image_bytes: bytes, dimensions: Tuple[int, int]):
 
 def get_icon_pngs(term: str) -> List[bytes]:
   term = term.lower()
-  redis = current_app.config["SESSION_REDIS"]
+  redis = current_app.config["REDIS_CONN"]
   redis_key = f"{REDIS_KEY_PREFIX}:{term}"
   
   # Attempt to fetch from cache
