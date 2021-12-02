@@ -1,7 +1,10 @@
+import sys
 from flask import Blueprint, request, make_response, jsonify
 from . import mongo
 from bson.objectid import ObjectId
 from .firebase import check_token
+
+import sys
 
 bp = Blueprint("books", __name__)
 
@@ -24,10 +27,13 @@ def books():
   elif request.method == 'POST':
 
     title = request.args.get('title')
+    theme = request.args.get('theme')
 
     book = mongo.books.insert_one({ 'parent' : ObjectId(userId), 'components' : [] })
 
-    new_book = { 'book_id' : book.inserted_id, 'title' : title }
+    new_book = { 'book_id' : book.inserted_id, 'title' : title, 'theme': theme}
+
+    print(theme, sys.stderr)
 
     mongo.users.update_one({ '_id' : ObjectId(userId) }, {'$push': {'books': new_book}})
     user = mongo.users.find_one()
