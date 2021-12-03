@@ -4,8 +4,6 @@ from . import mongo
 from bson.objectid import ObjectId
 from .firebase import check_token
 
-import sys
-
 bp = Blueprint("books", __name__)
 
 @bp.route("/books", methods=['GET', 'POST','DELETE', 'PATCH'])
@@ -32,8 +30,6 @@ def books():
     book = mongo.books.insert_one({ 'parent' : ObjectId(userId), 'components' : [] })
 
     new_book = { 'book_id' : book.inserted_id, 'title' : title, 'theme': theme}
-
-    print(theme, sys.stderr)
 
     mongo.users.update_one({ '_id' : ObjectId(userId) }, {'$push': {'books': new_book}})
     user = mongo.users.find_one()
