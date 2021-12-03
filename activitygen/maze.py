@@ -64,7 +64,7 @@ class Maze:
 
 
         # print(image.tolist(), file=sys.stderr)
-        # print(shaped_map, file=sys.stderr)
+        print(shaped_map, file=sys.stderr)
         #shaped_map = image.tolist()
 
         self.nx, self.ny = len(shaped_map), len(shaped_map[0])
@@ -80,7 +80,7 @@ class Maze:
                 inBounds = shaped_map[x][y]
                 self.maze_map[y][x].inBounds = inBounds
                 if inBounds:
-                    if(self.ix == -1):
+                    if self.ix == -1:
                         self.ix, self.iy = x,y
                     self.end_x, self.end_y = x, y
 
@@ -291,7 +291,7 @@ def get_state():
       grid_width = int(body["width"])
       grid_height = int(body["height"])
   
-  grid = [[False for i in range(grid_width)] for j in range(grid_height)]
+  grid = [[True for i in range(grid_width)] for j in range(grid_height)]
 
   if "grid" in body:
       grid = body["grid"]
