@@ -7,7 +7,7 @@ from flask.templating import render_template
 from flask import abort, Blueprint, Markup, request
 
 from .commons.icons import get_icon_pngs, silhouette_pixel_art
-
+import sys
 class Cell:
     
     # A wall separates a pair of cells in the N-S or W-E directions.
@@ -35,7 +35,7 @@ class Cell:
 class Maze:
     """A Maze, represented as a grid of cells."""
 
-    def __init__(self, nx, ny, image, ix=0, iy=0):
+    def __init__(self, nx, ny, grid):
         """Initialize the maze grid.
         The maze consists of nx * ny cells and will be constructed starting
         at the cell indexed at (ix, iy).
@@ -49,7 +49,7 @@ class Maze:
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
         # [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
-        # [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],
+        # [0,0,0,1,1,1,1,1,0,1,1,1,1,1,1],0, 0
         # [0,0,0,1,1,1,1,0,0,1,1,1,1,1,1],
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,1],
@@ -60,57 +60,27 @@ class Maze:
         # [0,0,0,1,1,1,0,0,0,1,1,1,1,1,0]
         # ]
 
-        shaped_map = [[ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False, True,  False,  False,  False,  False,  False,  False,  False, True,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False, True,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False, True, True, True,  False, True,  False, True, True, True,
-                False,  False,  False],
-            [ False,  False,  False, True, True,  False,  False, True,  False,  False, True, True,
-                False,  False,  False],
-            [ False, True, True, True,  False, True,  False,  False,  False, True,  False, True,
-            True, True,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False, True,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False],
-            [ False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,  False,
-                False,  False,  False]]
+        shaped_map = grid
 
 
         # print(image.tolist(), file=sys.stderr)
-        # print(shaped_map, file=sys.stderr)
+        print(shaped_map, file=sys.stderr)
         #shaped_map = image.tolist()
 
         self.nx, self.ny = len(shaped_map), len(shaped_map[0])
         #self.nx, self.ny = nx, ny
-        self.ix, self.iy = ix, iy
         self.ix, self.iy = -1,-1
         self.end_x, self.end_y = -1,-1
-        self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
+        self.maze_map = [[Cell(x, y) for y in range(self.ny)] for x in range(self.nx)]
         
        
         for x in range(self.nx):
             for y in range(self.ny):
                 # Sets cell to be out of bounds if not part of the shaped map
-                inBounds = not shaped_map[x][y]
+                inBounds = shaped_map[x][y]
                 self.maze_map[y][x].inBounds = inBounds
                 if inBounds:
-                    if(self.ix == -1):
+                    if self.ix == -1:
                         self.ix, self.iy = x,y
                     self.end_x, self.end_y = x, y
 
@@ -309,13 +279,31 @@ class Maze:
 
 bp = Blueprint("maze", __name__, url_prefix="/activities/maze")
 
-@bp.route("/state")
+@bp.route("/state", methods=["POST"])
 def get_state():
   """Returns internal maze state from provided options"""
-  grid_width = int(request.args.get("width", 15))
-  grid_height = int(request.args.get("height", 15))
-  theme = request.args.get("theme")
-  maze_svgs = generate_maze(grid_width, grid_height)
+
+  body = request.get_json()
+  print(body, file=sys.stderr)
+  grid_width, grid_height = 30,30
+  
+  if "width" in body:
+      grid_width = int(body["width"])
+      grid_height = int(body["height"])
+  
+  grid = [[True for i in range(grid_width)] for j in range(grid_height)]
+
+  if "grid" in body:
+      grid = body["grid"]
+
+  
+      
+
+  print(grid_width, file=sys.stderr)
+  print(grid_height, file=sys.stderr)
+  print(grid, file=sys.stderr)
+
+  maze_svgs = generate_maze(grid_width, grid_height, grid)
   #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
   return {
     "description": ["Complete the maze."],
@@ -341,8 +329,8 @@ def generate_shaped_maze(grid_width, grid_height, theme):
     res = maze.generate_svg()
     return res
 
-def generate_maze(grid_width, grid_height):
-    maze = Maze(grid_width, grid_height, 0, 0)
+def generate_maze(grid_width, grid_height, grid):
+    maze = Maze(grid_width, grid_height, grid)
     maze.make_maze()
     res = maze.generate_svg()
     return res
