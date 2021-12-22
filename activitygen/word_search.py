@@ -36,17 +36,15 @@ def get_state():
   assert(list(filter(lambda w: len(w) > MAX_GRID_LENGTH, copy_words)) == [])
 
   cells, hangman_words, word_positions = generate(copy_words, hidden_message)
-  description = [
-    "Some words have been hidden in this square board. You can find them written in a row, column "
-    "or diagonally, from left to right or viceversa. ",
-    f"The words you are looking for are: {', '.join(words)}.",
-  ]
+  
+  description = ("Some words have been hidden in this square board. You can find them written in a row, column "
+    f"or diagonally, from left to right or viceversa. The words you are looking for are: {', '.join(words)}.")
+  
   if hidden_message:
-    description.append(
-      "Find all these words and circle them on the board. Once you're done, look at the unused letters "
+    description += ("Find all these words and circle them on the board. Once you're done, look at the unused letters "
       "and find the hidden message. In order to do this, keep in mind that each 2 consecutive letters composing the hidden "
-      "message have the same number of unused letters between them."
-    )
+      "message have the same number of unused letters between them.")
+
   return {
     "description": description,
     "cells": cells,
