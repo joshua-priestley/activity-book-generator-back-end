@@ -78,7 +78,7 @@ class Maze:
             for y in range(self.ny):
                 # Sets cell to be out of bounds if not part of the shaped map
                 inBounds = shaped_map[x][y]
-                self.maze_map[y][x].inBounds = inBounds
+                self.maze_map[x][y].inBounds = inBounds
                 if inBounds:
                     if self.ix == -1:
                         self.ix, self.iy = x,y
@@ -291,7 +291,7 @@ def get_state():
       grid_width = int(body["width"])
       grid_height = int(body["height"])
   
-  grid = [[True for i in range(grid_width)] for j in range(grid_height)]
+  grid = [[True for j in range(grid_height)] for i in range(grid_width)]
 
   if "grid" in body:
       grid = body["grid"]
@@ -301,7 +301,6 @@ def get_state():
 
   print(grid_width, file=sys.stderr)
   print(grid_height, file=sys.stderr)
-  print(grid, file=sys.stderr)
 
   maze_svgs = generate_maze(grid_width, grid_height, grid)
   #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
