@@ -4,7 +4,7 @@ from re import S
 import re
 import sys
 from flask.templating import render_template
-from flask import abort, Blueprint, Markup, request
+from flask import abort, Blueprint, Markup, request, make_response, jsonify
 
 from .commons.icons import get_icon_pngs, silhouette_pixel_art
 import sys
@@ -302,13 +302,20 @@ def get_state():
   print(grid_width, file=sys.stderr)
   print(grid_height, file=sys.stderr)
 
-  maze_svgs = generate_maze(grid_width, grid_height, grid)
-  #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
-  return {
+  try:
+    maze_svgs = generate_maze(grid_width, grid_height, grid)
+    return {
     "description": "Complete the maze.",
     "svg": maze_svgs[0],
-    "sol": maze_svgs[1]
+    "sol": maze_svgs[1],
   }
+  except:
+      return {
+          "status": "Usolvable maze"
+      }
+ 
+  #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
+  
 
 def generate_shaped_maze(grid_width, grid_height, theme):
     """Returns internal nonogram state from provided options"""
