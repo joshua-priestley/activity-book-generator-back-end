@@ -305,7 +305,7 @@ def get_state():
   maze_svgs = generate_maze(grid_width, grid_height, grid)
   #maze_svgs = generate_shaped_maze(grid_width, grid_height, theme)
   return {
-    "description": ["Complete the maze."],
+    "description": "Complete the maze.",
     "svg": maze_svgs[0],
     "sol": maze_svgs[1]
   }

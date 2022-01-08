@@ -155,6 +155,9 @@ def get_state():
     shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
 
     return {
+        "description": ("Solve the puzzle by shuffling the tiles in the image to recreate the original.\n"
+                       "Fill in the grid with numbers corresponding to the unshuffled image.\n"
+                       "Try your best at drawing and colouring the solved image in the empty box!"),
         "test": num_tiles,
         "name": image.name,
         "grid": grid_shuffled

@@ -24,7 +24,7 @@ def get_state():
   words = request.args.get("words").split(",")
 
   return {
-    "description": [f"Some letters from the following words are missing! Can you fill in the blanks to complete each {theme} themed word?"],
+    "description": f"Some letters from the following words are missing! Can you fill in the blanks to complete each {theme} themed word?",
     **generate(theme, words, difficulty)
   }
 

@@ -32,6 +32,11 @@ def generate_nonogram(image) -> Dict:
     for numbers in (row_numbers, column_numbers))
 
   return {
+    "description": ("Some of the squares in the grid below should be shaded in. "
+                  "Beside each row and column, you are given the lengths of groups of squares to fill in.\n"
+                  "For example, the numbers \"2 3\" mean there should be sets of 2 and 3 consecutive shaded "
+                  "cells in that row or column.\n"
+                  "Shade in all the correct cells to reveal a themed picture!"),
     "image": image.tolist(),
     "row_numbers": row_numbers,
     "column_numbers": column_numbers

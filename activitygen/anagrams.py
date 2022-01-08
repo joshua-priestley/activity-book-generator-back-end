@@ -20,7 +20,7 @@ def get_state():
   words = request.args.get("words").split(",")
 
   return {
-    "description": [f"The following words have been scrambled! Can you rearrange the letters to find each {theme} themed word?"],
+    "description": f"The following words have been scrambled! Can you rearrange the letters to find each {theme} themed word?",
     **generate_data(theme, words, difficulty)
   }
 

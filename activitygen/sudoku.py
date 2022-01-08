@@ -166,10 +166,9 @@ def get_state():
     b = Board()
     sudoku, solution = b.gen_themed_sudoku(word, difficulty.value)
     return {
-        "description": [
-            f"Complete the following 9x9 grid using the characters from the word '{word}', "
-            "such that each row, column and 3x3 box features each character exactly once."
-        ],
+        "description":
+            (f"Complete the following 9x9 grid using the characters from the word '{word}', "
+            "such that each row, column and 3x3 box features each character exactly once."),
         "grid": sudoku.tolist(),
         "solution": solution.tolist()
     }
