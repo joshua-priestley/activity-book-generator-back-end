@@ -41,3 +41,12 @@ def generate_nonogram(image) -> Dict:
     "row_numbers": row_numbers,
     "column_numbers": column_numbers
   }
+
+@bp.route("/state-from-custom", methods=["POST"])
+def get_state_from_custom_img():
+  try:
+    image = request.get_json()["grid"]
+  except Exception:
+    abort(400, "Missing custom image in request body")
+
+  return generate_nonogram(np.array(image))
