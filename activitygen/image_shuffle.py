@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, send_file
 from PIL import Image
 import random
 import math
+from io import BytesIO, StringIO
 
 
 def image_shuffler(image_file, num_tiles):
@@ -141,9 +142,20 @@ if __name__ == "__main__":
     shuffled_tiles, grid_shuffled, grid_solution = image_shuffler('christmas.jpg', 9)
     print("Grid Shuffled", grid_shuffled)
     print("Grid Solution", grid_solution)
+    img_io = BytesIO()
+    shuffled_tiles.save(img_io, format='JPEG')
+    img_io.seek(0)
+    print(img_io)
 
 
 bp = Blueprint("image_shuffle", __name__, url_prefix="/activities/image_shuffle")
+
+
+def serve_pil_image(pil_img):
+    img_io = BytesIO()
+    pil_img.save(img_io, 'JPEG', quality=70)
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/jpeg')
 
 
 @bp.route("/state", methods=('GET', 'POST'))
@@ -154,18 +166,22 @@ def get_state():
 
     shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
 
-    return {
-        "description": ("Solve the puzzle by shuffling the tiles in the image to recreate the original.\n"
-                       "Fill in the grid with numbers corresponding to the unshuffled image.\n"
-                       "Try your best at drawing and colouring the solved image in the empty box!"),
-        "test": num_tiles,
-        "name": image.name,
-        "grid": grid_shuffled
-        # TODO how to pass back image?
-        # "image_shuffled": shuffled_image_path,
-        # "grid_shuffled": grid_shuffled,
-        # "image_solution": image.path,
-        # "grid_solution": grid_solution
-    }
+    return serve_pil_image(shuffled_image_path)
+
+
+
+    # return {
+    #     "description": ("Solve the puzzle by shuffling the tiles in the image to recreate the original.\n"
+    #                    "Fill in the grid with numbers corresponding to the unshuffled image.\n"
+    #                    "Try your best at drawing and colouring the solved image in the empty box!"),
+    #     "test": num_tiles,
+    #     "name": image.name,
+    #     "grid": grid_shuffled
+    #     # TODO how to pass back image?
+    #     # "image_shuffled": shuffled_image_path,
+    #     # "grid_shuffled": grid_shuffled,
+    #     # "image_solution": image.path,
+    #     # "grid_solution": grid_solution
+    # }
 
     # TODO delete the image and shuffled image
