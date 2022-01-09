@@ -49,4 +49,5 @@ def get_state_from_custom_img():
   except Exception:
     abort(400, "Missing custom image in request body")
 
-  return generate_nonogram(np.array(image))
+  image = np.array(image).T
+  return generate_nonogram(image)
