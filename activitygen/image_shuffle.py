@@ -142,10 +142,7 @@ if __name__ == "__main__":
     shuffled_tiles, grid_shuffled, grid_solution = image_shuffler('christmas.jpg', 9)
     print("Grid Shuffled", grid_shuffled)
     print("Grid Solution", grid_solution)
-    img_io = BytesIO()
-    shuffled_tiles.save(img_io, format='JPEG')
-    img_io.seek(0)
-    print(img_io)
+    print(' , '.join([' '.join(str(c) for c in lst) for lst in grid_shuffled]))
 
 
 bp = Blueprint("image_shuffle", __name__, url_prefix="/activities/image_shuffle")
@@ -166,7 +163,12 @@ def get_state():
 
     shuffled_image_path, grid_shuffled, grid_solution = image_shuffler(image, int(num_tiles))
 
-    return serve_pil_image(shuffled_image_path)
+    response = serve_pil_image(shuffled_image_path)
+    response.headers['solved_grid'] = ' , '.join([' '.join(str(c) for c in lst) for lst in grid_solution])
+    response.headers['shuffled_grid'] = ' , '.join([' '.join(str(c) for c in lst) for lst in grid_shuffled])
+    response.headers['access-control-expose-headers'] = "solved_grid,shuffled_grid"
+
+    return response
 
 
 
