@@ -90,9 +90,9 @@ def generate(words, hidden_message = None):
   # We are expecting a list of words
   assert(isinstance(words, list))
 
-  print("The words you have to find are: ", end='')
-  print(*words, sep=", ")
-  print()
+  # print("The words you have to find are: ", end='')
+  # print(*words, sep=", ")
+  # print()
 
   if hidden_message != None:
     hidden_words = hidden_message.split()
@@ -116,14 +116,14 @@ def generate(words, hidden_message = None):
   cells = place_hidden_message(hidden_message, hidden_msg_length, cells, lng, remaining)
   cells = add_random_letters(cells, lng)
   # print_board(cells, lng)
-  if hidden_message != None:
-    print("Complete the secret message in the space below:")
-    print(hangman_text + '\n')
+  # if hidden_message != None:
+    # print("Complete the secret message in the space below:")
+    # print(hangman_text + '\n')
 
-  print("\n The word positions are:")
-  for word in words:
-    print(word + ": " + str(word_positions[word]))
-  print()
+  # print("\n The word positions are:")
+  # for word in words:
+  #   print(word + ": " + str(word_positions[word]))
+  # print()
 
   return (cells, hangman_words, word_positions)
 

@@ -4,7 +4,6 @@ from random import getrandbits, Random
 from typing import Dict, List
 
 from .commons.difficulty import Difficulty
-from .themes import pick_words
 
 NOT_LOWER_ALPHA = re.compile("([^a-z]+)")
 
