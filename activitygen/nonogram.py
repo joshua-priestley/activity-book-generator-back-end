@@ -16,7 +16,9 @@ def get_state():
 
   images = get_icon_pngs(theme)
   if not images:
-    abort(404, f"No suitable images found for theme '{theme}'")
+    return {
+      "status": "No images found"
+    }
   image_bytes = random.choice(images)
   image = silhouette_pixel_art(image_bytes, (width, height))
   return generate_nonogram(image)
