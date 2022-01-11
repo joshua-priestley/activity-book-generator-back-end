@@ -1,0 +1,22 @@
+version: "3.7"
+services:
+  web:
+    build: .
+    depends_on:
+      - "mongo"
+      - "redis"
+    environment:
+      - FRONT_END_URL
+      - WORDS_API_URL
+      - NOUN_PROJECT_API_KEY=${NOUN_PROJECT_API_KEY}
+      - NOUN_PROJECT_API_SECRET=${NOUN_PROJECT_API_SECRET}
+    ports:
+      - ${APP_PORT:-8080}:5000
+    volumes:
+      - ${MODELS_DIR:-.}:/root/gensim-data
+      - ${FIREBASE_KEY:-./keys/themed-activity-book-firebase-adminsdk.json}:/usr/src/app/keys/themed-activity-book-firebase-adminsdk.json
+    entrypoint: ["./tests/container_run_tests.sh"]
+  mongo:
+    image: bitnami/mongodb:5.0
+  redis:
+    image: redis:6-alpine
