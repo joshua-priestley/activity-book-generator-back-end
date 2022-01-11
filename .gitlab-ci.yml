@@ -5,7 +5,6 @@ stages:
 test:
   tags:
     - shell_dev
-    - shell_prod
   stage: test
   script:
     - export APP_PORT=8080
