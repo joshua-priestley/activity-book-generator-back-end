@@ -37,14 +37,6 @@ def test_anagram_gen_preserves_words(difficulty):
   assert jacko_anagram[6:8] == "'-"
   assert is_rearrangement(jacko_word[8:], jacko_anagram[8:])
 
-@pytest.mark.parametrize("difficulty", (Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD))
-def test_anagram_data_contains_theme_and_original_words(difficulty):
-  """Anagram internal data representation should remember theme and original words"""
-  sample_theme = "Christmas"
-  data = generate_data(sample_theme, SAMPLE_WORDS, difficulty)
-  assert "theme" in data and data["theme"] == sample_theme
-  assert "words" in data and data["words"] == SAMPLE_WORDS
-
 def test_anagram_html_contains_all_anagrams(app):
   with app.test_request_context():
     SAMPLE_DATA = {

@@ -1,20 +1,16 @@
 stages: 
+  - test
   - deploy
 
-#test:
-#  tags:
-#    - docker
-#  image: python:bullseye
-#  stage: test
-#  services:
-#    - name: redis:6-alpine
-#      alias: redis
-#    - nam       e: bitnami/mongodb:5.0
-#      alias: mongo
-#  script:
-#    - pip install -r requirements.txt
-#    - python -m coverage run -m pytest
-#    - python -m pytest -v
+test:
+  tags:
+    - shell_dev
+    - shell_prod
+  stage: test
+  script:
+    - export APP_PORT=8080
+    - export WORDS_API_URL="http://cloud-vm-43-108.doc.ic.ac.uk"
+    - ./run_tests.sh
 
 deploy_dev:
   tags:
